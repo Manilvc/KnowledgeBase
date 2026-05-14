@@ -4,12 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>EveryCRED Documentation</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3C/svg%3E">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
+  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace;
   --bg: #080e1a;
   --sidebar: #0b1120;
   --surface: #0f1a28;
@@ -26,9 +29,15 @@
 
 html, body { height: 100%; overflow: hidden; }
 
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
 body {
   display: flex;
-  font-family: 'Syne', sans-serif;
+  font-family: var(--font-sans);
   background: var(--bg);
   color: var(--text);
   height: 100vh;
@@ -76,13 +85,13 @@ body {
 }
 
 .logo-name { font-size: .85rem; font-weight: 800; letter-spacing: -.02em; }
-.logo-ver  { font-size: .62rem; color: var(--dim); font-family: 'DM Mono', monospace; }
+.logo-ver  { font-size: .62rem; color: var(--dim); font-family: var(--font-mono); }
 
 #search {
   width: 100%; padding: 6px 10px;
   background: var(--surface); border: 1px solid var(--border2);
   border-radius: 6px; color: var(--text);
-  font-size: .78rem; font-family: 'DM Mono', monospace;
+  font-size: .78rem; font-family: var(--font-mono);
   outline: none; transition: border-color .15s;
 }
 #search:focus { border-color: var(--accent); }
@@ -93,13 +102,13 @@ nav { flex: 1; overflow-y: auto; padding: 8px 0 20px; }
 .nav-group-label {
   padding: 8px 18px 3px;
   font-size: .6rem; letter-spacing: .13em; text-transform: uppercase;
-  color: var(--dim); font-family: 'DM Mono', monospace;
+  color: var(--dim); font-family: var(--font-mono);
 }
 
 .nav-item {
   display: block; width: 100%; text-align: left;
   padding: 6px 18px; border: none; cursor: pointer;
-  font-size: .79rem; font-family: 'Syne', sans-serif;
+  font-size: .79rem; font-family: var(--font-sans);
   background: transparent; color: var(--muted);
   border-left: 2px solid transparent;
   transition: all .12s; line-height: 1.4;
@@ -135,13 +144,13 @@ main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
 .breadcrumb {
   display: flex; align-items: center; gap: 5px;
   font-size: .7rem; color: var(--dim);
-  font-family: 'DM Mono', monospace;
+  font-family: var(--font-mono);
 }
 .breadcrumb span { color: var(--muted); }
 
 .topbar-tags { display: flex; gap: 7px; }
 .tag {
-  font-size: .62rem; font-family: 'DM Mono', monospace;
+  font-size: .62rem; font-family: var(--font-mono);
   color: var(--dim); padding: 2px 8px;
   border: 1px solid var(--border); border-radius: 99px;
 }
@@ -157,7 +166,7 @@ main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
 /* Page header */
 .page-badge {
   display: inline-block;
-  font-size: .6rem; font-family: 'DM Mono', monospace;
+  font-size: .6rem; font-family: var(--font-mono);
   letter-spacing: .13em; text-transform: uppercase;
   padding: 3px 10px; border-radius: 99px;
   margin-bottom: 10px;
@@ -192,7 +201,7 @@ h1.page-title {
 .md code {
   background: var(--code-bg); border: 1px solid var(--border2);
   border-radius: 4px; padding: 2px 6px;
-  font-family: 'DM Mono', monospace; font-size: .78rem;
+  font-family: var(--font-mono); font-size: .78rem;
   color: var(--code-text);
 }
 
@@ -203,11 +212,11 @@ h1.page-title {
 }
 .md pre code {
   background: none; border: none; padding: 0;
-  font-size: .78rem; color: #94d2f0; white-space: pre; font-family: 'DM Mono', monospace;
+  font-size: .78rem; color: #94d2f0; white-space: pre; font-family: var(--font-mono);
 }
 .lang-label {
   color: #3b82f6; font-size: .63rem;
-  font-family: 'DM Mono', monospace;
+  font-family: var(--font-mono);
   margin-bottom: 6px; letter-spacing: .1em;
 }
 
@@ -218,6 +227,20 @@ h1.page-title {
 }
 
 .md hr { border: none; border-top: 1px solid var(--border2); margin: 28px 0; }
+.md figure.md-figure {
+  margin: 20px 0;
+  border-radius: 8px;
+  border: 1px solid var(--border2);
+  background: #050a14;
+  overflow: hidden;
+  line-height: 0;
+}
+.md figure.md-figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
 
 .md strong { color: #e2e8f0; font-weight: 700; }
 .md a { color: #818cf8; text-decoration: none; }
@@ -229,7 +252,7 @@ h1.page-title {
 .md th {
   text-align: left; padding: 7px 14px;
   border-bottom: 1px solid var(--border2);
-  color: var(--dim); font-family: 'DM Mono', monospace;
+  color: var(--dim); font-family: var(--font-mono);
   font-size: .7rem; letter-spacing: .08em; white-space: nowrap;
 }
 .md td {
@@ -247,7 +270,7 @@ h1.page-title {
 }
 .page-footer span {
   font-size: .7rem; color: var(--dim);
-  font-family: 'DM Mono', monospace;
+  font-family: var(--font-mono);
 }
 
 /* Badge colour utility applied via JS */
@@ -299,9 +322,10 @@ h1.page-title {
 // NAV STRUCTURE
 // ─────────────────────────────────────────────────────────────────────────────
 const NAV = [
-  {g:"Overview",       icon:"◈", items:[["intro","Introduction"],["platform-overview","Platform Overview"],["ecosystem","How It Works"],["credential-lifecycle","Credential Lifecycle"]]},
+  {g:"Overview",       icon:"◈", items:[["intro","Introduction"],["platform-architecture","Platform Architecture"],["ecosystem","How It Works"],["credential-lifecycle","Credential Lifecycle"]]},
+  {g:"Deployment",     icon:"⬡", items:[["saas-onprem","SaaS vs On-Premises"],["regions","Regional Coverage"]]},
   {g:"Core Concepts",  icon:"◇", items:[["verifiable-credentials","Verifiable Credentials"],["credential-formats","Credential Formats"],["dids","Decentralized Identifiers"],["selective-disclosure","Selective Disclosure"],["blockchain-anchoring","Blockchain Anchoring"],["rbac","Roles & Permissions"]]},
-  {g:"Platform",       icon:"▣", items:[["dcs","DCS — Issuer Platform"],["wallet-app","Wallet App"],["verifier","Verifier"],["contributor","Contributor Module"],["sdk","SDK & Developer Tools"]]},
+  {g:"Platform",       icon:"▣", items:[["dcs-overview","DCS — Overview"],["contributor-app","Contributor Application"],["holder-web","Holder Web Application"],["wallet-app","Wallet App (Mobile)"],["verifier-platform","Verifier (WL + Own)"],["did-platform","DID Methods & Resolver"],["sdk","SDK & Developer Tools"]]},
   {g:"Workflow Engine",icon:"◉", items:[["workflow-overview","Overview"],["workflow-builder","Building a Workflow"],["workflow-flows","End-to-End Flows"],["workflow-api","API Reference"]]},
   {g:"API Reference",  icon:"◻", items:[["api-auth","Authentication"],["api-issuer","Issuer"],["api-subject","Subject Templates"],["api-records","Records"],["api-credentials","Credentials"],["api-holder","Holder"],["api-verifier","Verifier"],["api-rbac","RBAC"]]},
   {g:"Guides",         icon:"▷", items:[["guide-first-credential","Issue Your First Credential"],["guide-bulk","Bulk Issuance via CSV"],["guide-verify","Verify a Credential"],["guide-workflow","Set Up a Workflow"],["guide-encryption","Field-Level Encryption"]]},
@@ -361,7 +385,7 @@ EveryCRED is five integrated product surfaces built on a shared FastAPI backend.
 
 ## Product Surfaces
 
-### DCS — Digital Credential System
+### DCS — Digital Credentialing Solution
 The issuer-facing web platform. Organisations use DCS to create issuer profiles, define credential schemas, manage records, run approval workflows, and issue credentials at scale.
 
 ### Wallet App
@@ -436,13 +460,7 @@ A verifiable credential ecosystem has three roles. Understanding them is the fou
 
 ## The Three Roles
 
-\`\`\`
-┌──────────┐   issues    ┌──────────┐  presents  ┌──────────┐
-│  Issuer  │ ──────────► │  Holder  │ ──────────► │ Verifier │
-└──────────┘             └──────────┘             └──────────┘
-   DCS/API              Wallet App             Verifier API
- (creates, signs)     (claims, stores)         (validates)
-\`\`\`
+![EveryCRED — Issuer, Holder, and Verifier roles](assets/three-roles.png)
 
 **Issuer** — An organisation (university, employer, government body) that creates and cryptographically signs credentials. Each issuer has a unique DID and operates within the DCS platform.
 
@@ -483,22 +501,7 @@ A credential moves through a well-defined sequence of states, from raw data entr
 
 ## Lifecycle Diagram
 
-\`\`\`
-  Record Created
-       │
-       ▼  (validate_records)
-  [IN_PROCESS] ──────── validation errors ──────► stays IN_PROCESS
-       │
-       ▼ (validation passes)
-   [DRAFT]
-       │
-       ▼ (issue_credentials)
-   [ISSUED]
-       │
-       ├──── (revoke) ──────► [REVOKED]   terminal, permanent
-       │
-       └──── (expires) ─────► [EXPIRED]   automatic at valid_until
-\`\`\`
+![EveryCRED credentials lifecycle](assets/credential-lifecycle.png)
 
 ## Record Statuses
 
@@ -828,7 +831,7 @@ async def issue_credentials(
 The \`require_permission\` dependency: decodes JWT → loads user → checks role permissions → raises \`403\` if slug not granted. \`ADMIN\` role bypasses all checks.
 `};
 
-PAGES["dcs"] = {title:"DCS — Digital Credential System", badge:"Platform", body:`
+PAGES["dcs"] = {title:"DCS — Digital Credentialing Solution", badge:"Platform", body:`
 The DCS is the issuer-facing platform providing the complete toolset for creating, managing, and issuing verifiable credentials at scale.
 
 ## Completion: 74% (45/61 features)
@@ -2487,6 +2490,545 @@ Release history for the EveryCRED platform.
 See the full Q1 2026 Roadmap for details.
 `};
 
+
+PAGES["platform-architecture"] = {title:"Platform Architecture", badge:"Core", body:`
+EveryCRED is composed of five distinct product components that form a complete digital credential ecosystem.
+
+## The Five Components
+
+![EveryCRED platform architecture — the five components](assets/system-architecture.png)
+
+---
+
+## Component 1 — DCS (Digital Credentialing Solution)
+
+The **issuer-facing management platform** with three embedded sub-applications:
+
+- **Issuer Dashboard** — Credential schema, record management, issuance, analytics, RBAC
+- **Contributor Application** — Tokenised data submission by external third parties
+- **Holder Web Application** — Browser-based credential portal for recipients
+
+DCS runs in both **SaaS** and **On-Premises** deployment modes.
+
+---
+
+## Component 2 — Wallet App (Mobile)
+
+A **standalone mobile wallet** (iOS + Android) for credential holders. Device-native, supports secure key storage, selective disclosure (SD-JWT), W3C VP, and OpenID4VCI/VP flows.
+
+Distinct from the Holder Web App — the Wallet App is holder-managed and works offline (planned).
+
+---
+
+## Component 3 — Service Layer
+
+The **shared backend infrastructure** powering all components:
+- REST API (FastAPI async) at \`/v1/*\`
+- Background tasks (Celery + Redis)
+- Blockchain anchoring engine
+- AWS S3 object storage
+- Email / SMS / push notification dispatch
+
+---
+
+## Component 4 — DID Methods & Resolver
+
+The **decentralized identity layer**:
+- Auto-generates a DID for every issuer at creation (immutable)
+- Hosts and resolves DID documents
+- Supports multiple DID methods (did:evrc live, did:key/did:web/did:ebsi planned)
+- W3C DID Core 1.0 compliance
+
+---
+
+## Component 5 — Verifier
+
+A **dual-mode verification service**:
+- **White-label Verifier** — Issuers embed branded verification under their own domain
+- **EveryCRED Verifier** — Public portal + REST API operated by EveryCRED
+
+All verification is public — no authentication required. Six-check cryptographic validation on every call.
+`};
+
+PAGES["saas-onprem"] = {title:"SaaS vs On-Premises", badge:"Core", body:`
+EveryCRED supports two deployment models. Understanding the differences is essential for planning your implementation.
+
+## Deployment Model Comparison
+
+| Dimension | SaaS | On-Premises |
+|---|---|---|
+| **Infrastructure owner** | EveryCRED (AWS) | Client (own data centre) |
+| **Setup required** | None — instant provisioning | Full infrastructure setup |
+| **Scalability** | Auto-scaling | Client-managed |
+| **Maintenance** | EveryCRED handles all updates | Client responsible |
+| **Data residency** | EveryCRED cloud regions | Client-controlled |
+| **Billing & Pricing module** | ✅ Available | ✖ Not available |
+| **Payment Gateway** | ✅ Available | ✖ Not available |
+| **S3 / Object Storage** | EveryCRED managed | Client must provision |
+| **KMS (Key Management)** | EveryCRED managed | Client must manage |
+| **Consent Management** | Centralised | Client must build |
+| **SurePass / Aadhaar KYC** | Pre-integrated | Client must configure |
+| **Multi-tenancy** | Platform-managed | Client-managed per deployment |
+
+---
+
+## Feature Availability by Deployment
+
+| Feature | SaaS | On-Prem |
+|---|---|---|
+| Core credential issuance | ✅ | ✅ |
+| Workflow Engine | ✅ | ✅ |
+| RBAC | ✅ | ✅ |
+| White-label branding | ✅ | ✅ |
+| DigiLocker (India) | ✅ | ✅ |
+| Aadhaar KYC (India) | ✅ | ✅ |
+| PDF certificate generation | ✅ | ✅ |
+| Blockchain anchoring | ✅ | ✅ |
+| Analytics & reporting | ✅ | ✅ |
+| Billing & Pricing | ✅ | ✖ |
+| Payment Gateway | ✅ | ✖ |
+| Zapier Integration | 🔜 Q3 | 🔜 Q3 |
+| eIDAS 2.0 (EU) | 🔜 Q4 | 🔜 Q4 |
+| AWS GovCloud (US) | 🔜 Q2 | — |
+
+---
+
+## Known Challenges
+
+### SaaS vs On-Prem Conflict
+Current production clients are predominantly SaaS-based, while the roadmap includes government-grade on-premises deployments. This creates parallel development burden for infrastructure-dependent features (S3, KMS, Consent Management).
+
+A **modular plugin architecture** is being built in Q1–Q2 2026 to allow these services to be swapped between EveryCRED-managed and client-managed implementations without forking the codebase.
+
+### On-Premises Infrastructure Diversity (India)
+Indian government deployments use diverse setups (NIC servers, local on-prem, private cloud). Each deployment requires per-environment configuration of connectors that are pre-integrated in the SaaS model.
+
+---
+
+## Decision Guide
+
+**Choose SaaS if:**
+- You want fast time-to-market without infrastructure investment
+- You need billing, payments, and auto-scaling
+- You prefer EveryCRED managing patches and uptime
+
+**Choose On-Premises if:**
+- Data sovereignty policy prohibits cloud storage of credential data
+- You are a government agency requiring NIC or private-DC deployment
+- You need full control over cryptographic keys (KMS)
+- Regulated sector with strict data residency requirements
+`};
+
+PAGES["regions"] = {title:"Regional Coverage", badge:"Core", body:`
+EveryCRED targets four primary regions with different feature sets, regulatory requirements, and deployment strategies.
+
+## Regional Feature Summary
+
+| Region | Total Features | Completed | In Progress | Planned | Completion |
+|---|---|---|---|---|---|
+| **India** | 187 | 82 | 8 | 62 | **44%** |
+| **EU** | 165 | 68 | 12 | 58 | **41%** |
+| **US** | 165 | 68 | 12 | 58 | **41%** |
+| **Africa** | 165 | 68 | 12 | 58 | **41%** |
+
+India has 22 additional features due to India Stack integrations not available in other regions.
+
+---
+
+## India — Deepest Integration
+
+**Live government deployments:** eTDR Platform, Police ID Cards, Arms Licenses.
+
+### India-Exclusive Features
+
+| Feature | Module | Status |
+|---|---|---|
+| DigiLocker Integration (API Setu) | DCS | ✅ Live |
+| SurePass / Aadhaar Data Mapping | DCS | ✅ Live |
+| Aadhaar OTP 2FA | DCS | ✅ Live |
+| Aadhaar-based KYC (Holder Web) | Holder Web | ✅ Live |
+| NFC-based DigiLocker / Aadhaar App | DCS | 🔜 Q1 2026 |
+| DigiLocker VC/VP Support | DCS | 🔜 Q1 2026 |
+| Aadhaar eKYC (Wallet App) | Wallet App | 🔜 Q2 2026 |
+| MOSIP / Inji Integration | MOSIP | 🔜 Q1–Q2 2026 |
+| Aadhaar APP Reusable ID | Use Cases | 🔜 Q4 2026 |
+| Hindi Language Support | DCS + Contributor | 🔜 Q4 2026 |
+| Marathi Language Support | DCS + Contributor | 🔜 Q4 2026 |
+| DPDP Act 2023 Compliance | Compliances | ⚠️ Q2 2026 |
+| Aadhaar Policy Compliance | Compliances | ⚠️ Q2 2026 |
+
+---
+
+## European Union — Compliance-First Entry
+
+EU market entry is sequenced around compliance milestones.
+
+### Regulatory Gates
+- **GDPR Certification** — Q2 2026 (Critical) — required before processing EU citizen data at scale
+- **eIDAS 2.0** — Q4 2026 (Critical) — required for the EU Digital Identity Wallet (EUDI) ecosystem
+
+### EU-Exclusive Features
+
+| Feature | Module | Status |
+|---|---|---|
+| eIDAS 2.0 | Core VC | 🔜 Q4 2026 |
+| did:ebsi | DID Layer | 🔜 Q4 2026 |
+
+---
+
+## United States — Platform & Developer Ecosystem
+
+No US-exclusive features. The US strategy is enterprise developer adoption via the SDK Sandbox (Q2) and API Key Management (Q2).
+
+### Key Gate
+**SOC2 Type II** — Q2 2026 (Critical) — required for enterprise and government contracts.
+
+No committed anchor use case yet. Bank Demo (Q1) and Hotel Demo (Q2) platforms are designed to seed market conversations.
+
+---
+
+## Africa — Emerging Market
+
+MOSIP integration (Q1–Q2 2026) is the primary differentiator for African government identity programs. Africa uses the same global feature set as US/EU.
+
+### MOSIP Integration Plan
+| Quarter | Feature |
+|---|---|
+| Q1 2026 | Inji Setup & Integration |
+| Q2 2026 | MOSIP Data Registry |
+| Q2 2026 | eSignet Integration |
+`};
+
+PAGES["dcs-overview"] = {title:"DCS — Overview", badge:"Platform", body:`
+The Digital Credentialing Solution (DCS) is EveryCRED's primary issuer-facing platform. It consists of three tightly integrated sub-applications that together cover the complete credential issuance lifecycle.
+
+## Three Sub-Applications Inside DCS
+
+### 1. Issuer Dashboard
+The core management interface used by credential-issuing organisations. Covers:
+- Issuer profile management with automatic DID assignment
+- Subject template (schema) creation with typed fields
+- Record ingestion — manual API or bulk CSV/Excel upload
+- Credential issuance, scheduling, revocation, sharing
+- Analytics, reporting, and risk monitoring (AI-powered — Q1 2026)
+- Team management with fine-grained RBAC
+- White-label branding and email customisation
+- Workflow builder and multi-stage approval execution
+
+### 2. Contributor Application
+An external-facing data submission portal for third parties who contribute data to issuance workflows. See [Contributor Application →](#contributor-app)
+
+### 3. Holder Web Application
+A browser-based credential portal for holders (distinct from the mobile Wallet App). See [Holder Web Application →](#holder-web)
+
+---
+
+## DCS Deployment Models
+
+| Dimension | SaaS | On-Premises |
+|---|---|---|
+| Infrastructure | EveryCRED-hosted (AWS) | Client data centre |
+| Billing & Pricing module | ✅ | ✖ |
+| Payment Gateway | ✅ | ✖ |
+| Multi-tenancy | Managed | Client-managed |
+| Scalability | Auto-scaling | Client-managed |
+| S3 Storage | EveryCRED managed | Client must provision |
+| KMS | EveryCRED managed | Client must manage |
+
+---
+
+## Completion: 74% (45/61 features)
+
+| Category | Done | In Progress | Planned |
+|---|---|---|---|
+| Auth & Onboarding | 4 | 0 | 0 |
+| Issuer Management | 6 | 0 | 2 |
+| Subject Templates | 3 | 0 | 1 |
+| Records | 4 | 0 | 2 |
+| Credentials | 8 | 1 | 3 |
+| Workflow Engine | 5 | 0 | 0 |
+| Analytics | 3 | 1 | 2 |
+| Team & RBAC | 5 | 0 | 0 |
+| White Label & Branding | 3 | 0 | 2 |
+| India Integrations | 4 | 0 | 2 |
+| Billing (SaaS only) | 0 | 0 | 2 |
+| Language Support | 0 | 0 | 2 |
+
+---
+
+## 2026 DCS Delivery Plan
+
+| Quarter | Features |
+|---|---|
+| Q1 | Subject Library, Email Settings, Risk Analytics (AI), NFC DigiLocker, DigiLocker VC/VP, Tenant DB Management |
+| Q2 | Individual Credentials Analytics, Reports Module |
+| Q3 | Zapier Integration |
+| Q4 | Credential Template Builder, Landing Page Builder, Hindi & Marathi, Billing & Payment (SaaS) |
+`};
+
+PAGES["contributor-app"] = {title:"Contributor Application", badge:"Platform", body:`
+The Contributor Application is a sub-system within DCS that allows **external data providers** to participate in credential issuance workflows without being granted full issuer access.
+
+## What Contributors Are
+
+Contributors are third parties — exam boards, HR systems, verification agencies, educational bodies — who hold data that an issuer needs before a credential can be issued. Rather than the issuer manually importing data, EveryCRED routes collection through the Contributor Application.
+
+## Submission Flow
+
+\`\`\`
+Issuer creates workflow with "contributor" stage
+              │
+              ▼
+Workflow request sent  →  Contributor receives tokenised email link
+              │
+              ▼
+Contributor opens secure submission form
+(No EveryCRED account required — token-based auth)
+              │
+              ▼
+POST /v1/contributor/submission  (no standard JWT)
+              │
+              ▼
+Data merged into requests.record_slug
+              │
+              ▼
+Stage advances  →  next approval stage or automatic draft creation
+\`\`\`
+
+## Contributor Account Management
+
+| Endpoint | Description |
+|---|---|
+| \`POST /v1/contributor/\` | Register a contributor organisation |
+| \`GET /v1/contributor/available-orgs\` | Browse available contributor organisations |
+| \`POST /v1/contributor/joining_request\` | Request to join as a contributor |
+| \`POST /v1/contributor/accept-reject\` | Issuer accepts or rejects a contributor |
+| \`PATCH /v1/contributor/status/{id}\` | Toggle contributor active/inactive |
+| \`POST /v1/contributor/submission\` | Submit data (token-based, no JWT) |
+| \`GET /v1/contributor/pending\` | List pending contributor requests |
+
+## Key Technical Detail: Deferred Async Push
+
+After a contributor submits data, any push to an external connector is deferred to a FastAPI **BackgroundTask** that runs *after* the HTTP response is sent and the database transaction commits — preventing deadlocks:
+
+\`\`\`python
+background_tasks.add_task(run_deferred_contributor_store_request, ...)
+# StoreRequestService.store_request() executes POST-commit
+\`\`\`
+
+A Celery task then sends an inbox notification to the issuer asynchronously via the \`credential_queue\`.
+
+## Completion: 71% (5/7 features)
+
+| Feature | Status |
+|---|---|
+| Signup & Login | ✅ Live |
+| Social Login Integration | ✅ Live |
+| Profile Management | ✅ Live |
+| Data Submission (tokenised) | ✅ Live |
+| Task History & Tracking | ✅ Live |
+| Hindi Language Support (India) | 🔜 Q1 2026 |
+| Marathi Language Support (India) | 🔜 Q1 2026 |
+`};
+
+PAGES["holder-web"] = {title:"Holder Web Application", badge:"Platform", body:`
+The Holder Web Application is a **browser-based credential portal** embedded within DCS. It gives credential recipients a no-install way to access, view, download, and share their credentials.
+
+## Holder Web vs Wallet App
+
+| Dimension | Holder Web Application | Wallet App (Mobile) |
+|---|---|---|
+| Platform | Web browser | iOS + Android |
+| Managed by | Issuer (within DCS) | Holder (standalone) |
+| Offline use | No | Yes (planned) |
+| Selective disclosure | No | Yes (SD-JWT) |
+| W3C VP presentation | No | Yes (planned Q1 2026) |
+| DID-based identity | No | Yes |
+| India KYC (Aadhaar) | ✅ Live | 🔜 Q2 2026 |
+| White-label | Yes | 🔜 Q2 2026 |
+| Installation required | No | Yes |
+| Cross-wallet interop | No | 🔜 Q2 2026 (DIDComm) |
+
+## What Holders Can Do (Web)
+
+- View all credentials received across issuers
+- Download PDF certificates
+- Share credentials via secure link or QR code
+- Submit KYC verification (Aadhaar eKYC, India)
+- Update profile information
+- Track credential status (issued, expired, revoked)
+
+## Technical Notes
+
+- Holder Web authentication uses a separate holder JWT middleware (\`get_current_holder\`), **distinct** from the standard issuer user JWT
+- Holder accounts can be created by issuers, or auto-created during workflow request delivery when a holder email is specified
+- Soft-delete applies — holders with active credentials cannot be permanently removed
+- Aadhaar Data Fetch integration: holder initiates eKYC, data auto-populates their profile
+
+## Completion: 100% (5/5 features)
+
+| Feature | Region | Status |
+|---|---|---|
+| Signup & Login | All | ✅ Live |
+| Profile Management | All | ✅ Live |
+| Data Submission | All | ✅ Live |
+| Aadhaar-based KYC | India only | ✅ Live |
+| Aadhaar Data Fetch & eKYC | India only | ✅ Live |
+
+> The Holder Web Application is the **only EveryCRED component at 100% completion**.
+`};
+
+PAGES["verifier-platform"] = {title:"Verifier — White-Label & Own", badge:"Platform", body:`
+EveryCRED provides credential verification in two modes that run on the same underlying engine.
+
+## Two Verification Modes
+
+### EveryCRED Own Verifier
+A public verification portal and REST API operated by EveryCRED. Any third party can verify a credential by:
+- Entering a UUID in the portal
+- Scanning a QR code embedded in a PDF certificate
+- Calling the public REST API directly
+
+No account, login, or API key required.
+
+### White-Label Verifier
+Issuers deploy a **fully branded verification portal** under their own domain. Configuration includes:
+- Custom logo, colour theme, and typography
+- Custom domain or subdomain
+- Branded verification result page
+- Configurable data fields displayed to verifiers
+
+Both modes run on the same verification engine with identical six-check validation.
+
+---
+
+## Verification Checks
+
+All six checks must pass for \`is_valid: true\`.
+
+| Check | What Is Verified |
+|---|---|
+| \`signature_valid\` | Ed25519 signature matches issuer's public key (via DID resolution) |
+| \`issuer_valid\` | Issuer DID is recognised and active |
+| \`subject_valid\` | Holder/subject information is internally consistent |
+| \`not_revoked\` | Credential not in RevocationList2020 |
+| \`not_expired\` | Current date is within \`valid_from\` – \`valid_until\` |
+| \`blockchain_verified\` | On-chain anchor hash matches credential data |
+
+---
+
+## API Endpoints
+
+**Base path:** \`/v1/verifier\` — All endpoints publicly accessible, no authentication required.
+
+| Method | Path | Description |
+|---|---|---|
+| GET | \`/user/credential/validate/{uuid}\` | Full 6-check validation result |
+| GET | \`/user/credential/{uuid}\` | View full credential with all claims |
+| POST | \`/user/credential/upload/json\` | Batch verify via JSON upload |
+
+---
+
+## Completion: 60% (3/5 features)
+
+| Feature | Status |
+|---|---|
+| Verify via Credential UUID | ✅ Live |
+| On-chain / Off-chain Verification | ✅ Live |
+| White-Label Branding | ✅ Live |
+| Token-Based Verification | 🔜 Q3 2026 |
+| Verifier Tenant Management | 🔜 Q3 2026 |
+
+### Token-Based Verification (Q3 2026)
+For enterprise verifiers requiring authenticated access — scoped access tokens, audit trails, custom verification policies.
+
+### Verifier Tenant Management (Q3 2026)
+Multi-tenant verifier portals where each enterprise gets their own branded instance with isolated history and analytics.
+`};
+
+PAGES["did-platform"] = {title:"DID Methods & Resolver", badge:"Platform", body:`
+EveryCRED operates a dedicated DID layer that manages identity creation, document hosting, and resolution for all platform participants.
+
+## What the DID Layer Does
+
+1. **Auto-generates a DID** for every new issuer profile (immutable from creation)
+2. **Hosts DID documents** that verifiers resolve to get the issuer's public key
+3. **Resolves external DIDs** from multiple methods
+4. **Manages signing key material** for credential issuance and verification
+
+## Supported DID Methods
+
+| Method | Status | Description |
+|---|---|---|
+| \`did:evrc\` | ✅ Live | EveryCRED's native blockchain-anchored DID |
+| \`did:jwk\` | ⚠️ Partial | JSON Web Key-based lightweight DID |
+| \`did:key\` | 🔜 Q3 2026 | Pure cryptographic DID (no external resolution needed) |
+| \`did:web\` | 🔜 Q3 2026 | Domain-anchored DID — resolves from issuer's own domain |
+| \`did:ebsi\` | 🔜 Q4 2026 | EU EBSI blockchain DID (required for eIDAS 2.0) |
+
+## DID Document Structure
+
+\`\`\`json
+{
+  "@context": "https://www.w3.org/ns/did/v1",
+  "id": "did:evrc:123456789abcdefg",
+  "verificationMethod": [{
+    "id": "did:evrc:123456789abcdefg#key-1",
+    "type": "Ed25519VerificationKey2020",
+    "controller": "did:evrc:123456789abcdefg",
+    "publicKeyMultibase": "z6MkjBWPP..."
+  }],
+  "assertionMethod": ["did:evrc:123456789abcdefg#key-1"],
+  "authentication": ["did:evrc:123456789abcdefg#key-1"]
+}
+\`\`\`
+
+## Resolver API
+
+| Method | Path | Auth | Description |
+|---|---|---|---|
+| GET | \`/v1/resolver/did/{did}\` | Optional | Resolve any supported DID |
+| GET | \`/v1/resolver/credential/{uuid}\` | Optional | Resolve credential by UUID |
+| POST | \`/v1/resolver/verify\` | Optional | Verify credential against resolved DID |
+
+## Trustless Verification Flow
+
+\`\`\`
+Verifier receives credential
+        │
+        ▼
+Read issuer field: "did:evrc:123456789abcdefg"
+        │
+        ▼
+Resolve DID → GET issuer's public key
+(from EveryCRED DID registry or issuer's own domain for did:web)
+        │
+        ▼
+Verify Ed25519 signature against public key
+        │
+        ▼
+✅ Verification succeeds — EveryCRED servers not required to be online
+\`\`\`
+
+## Completion: 67% (2/3 features)
+
+| Feature | Status |
+|---|---|
+| DID Drivers Support | ✅ Live |
+| Public DID Resolver Integration | ✅ Live |
+| DID Lifecycle Management | ⚠️ Q4 2026 |
+
+**DID Lifecycle Management (Q4 2026):** Full DID create/update/deactivate flows, key rotation and revocation, W3C DID Core 1.0 full compliance.
+
+## did:web Hosting Notes
+- DID document must be publicly available at a well-known URL on the issuer's domain
+- Use a CDN — verifiers worldwide may resolve the DID during every verification call
+- DID documents rarely change — aggressive caching is appropriate
+- Downtime on the issuer's server will prevent DID resolution and break verification
+`};
+
+// Inject just before the RENDER ENGINE comment
+
 // ─────────────────────────────────────────────────────────────────────────────
 // RENDER ENGINE
 // ─────────────────────────────────────────────────────────────────────────────
@@ -2505,6 +3047,18 @@ function renderMarkdown(text) {
 
   while (i < lines.length) {
     const line = lines[i];
+
+
+    // Markdown image: ![alt](url)
+    const imgLine = line.match(/^!\[([^\]]*)\]\(([^)]+)\)\s*$/);
+    if (imgLine) {
+      function escapeAttr(s) { return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+      const alt = escapeAttr(imgLine[1]);
+      const src = escapeAttr(imgLine[2]);
+      html += `<figure class="md-figure"><img src="${src}" alt="${alt}" loading="lazy" decoding="async"></figure>`;
+      i++;
+      continue;
+    }
 
     // Code block
     if (line.startsWith('```')) {
