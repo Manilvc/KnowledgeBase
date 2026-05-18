@@ -1,0 +1,3505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EveryCRED Documentation</title>
+<link rel="icon" href="assets/favicon.ico" type="image/x-icon">
+<link rel="shortcut icon" href="assets/favicon.ico">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace;
+  --bg: #060a12;
+  --bg-elevated: #0a101c;
+  --sidebar: #080d18;
+  --surface: #0e1624;
+  --surface-hover: #121c2e;
+  --border: #152030;
+  --border2: #1f3048;
+  --text: #e8eef6;
+  --muted: #8b9cb3;
+  --dim: #4a6278;
+  --accent: #6366f1;
+  --accent-light: #a5b4fc;
+  --accent-glow: rgba(99, 102, 241, 0.22);
+  --code-bg: #0a1220;
+  --code-text: #7dd3fc;
+  --radius: 10px;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.45);
+}
+
+html, body { height: 100%; overflow: hidden; }
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  display: flex;
+  font-family: var(--font-sans);
+  background: var(--bg);
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(99, 102, 241, 0.12), transparent),
+    radial-gradient(ellipse 60% 40% at 100% 0%, rgba(37, 99, 235, 0.06), transparent);
+  color: var(--text);
+  height: 100vh;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 99px; }
+
+/* ─────────────── SIDEBAR ─────────────── */
+#sidebar {
+  width: 268px;
+  min-width: 268px;
+  background: linear-gradient(180deg, #0a101c 0%, var(--sidebar) 100%);
+  border-right: 1px solid var(--border);
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  transition: width .2s, min-width .2s;
+  overflow: hidden;
+}
+
+#sidebar.collapsed { width: 0; min-width: 0; }
+
+.sidebar-header {
+  padding: 20px 18px 14px;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(180deg, rgba(99, 102, 241, 0.04) 0%, transparent 100%);
+  flex-shrink: 0;
+}
+
+.logo-row {
+  margin-bottom: 10px;
+}
+
+.logo-link {
+  display: block;
+  line-height: 0;
+  border-radius: 6px;
+  outline: none;
+}
+.logo-link:focus-visible {
+  box-shadow: 0 0 0 2px var(--accent);
+}
+
+.logo-img {
+  display: block;
+  width: 100%;
+  max-width: 220px;
+  height: auto;
+  max-height: 40px;
+  object-fit: contain;
+  object-position: left center;
+}
+
+.logo-ver {
+  margin-top: 8px;
+  font-size: .62rem;
+  color: var(--dim);
+  font-family: var(--font-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+#search {
+  width: 100%;
+  padding: 8px 12px 8px 34px;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: .8rem;
+  font-family: var(--font-sans);
+  outline: none;
+  transition: border-color .15s, box-shadow .15s, background .15s;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%234a6278' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.3-4.3'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: 11px center;
+}
+#search:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+  background-color: var(--surface-hover);
+}
+#search::placeholder { color: var(--dim); }
+
+nav { flex: 1; overflow-y: auto; padding: 8px 0 20px; }
+
+.nav-group-label {
+  padding: 8px 18px 3px;
+  font-size: .6rem; letter-spacing: .13em; text-transform: uppercase;
+  color: var(--dim); font-family: var(--font-mono);
+}
+
+.nav-item {
+  display: block;
+  width: calc(100% - 12px);
+  margin: 1px 6px;
+  text-align: left;
+  padding: 7px 12px;
+  border: none;
+  cursor: pointer;
+  font-size: .8rem;
+  font-weight: 450;
+  font-family: var(--font-sans);
+  background: transparent;
+  color: var(--muted);
+  border-radius: 8px;
+  border-left: none;
+  transition: color .12s, background .12s;
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.nav-item:hover {
+  color: #c4d0e0;
+  background: rgba(255, 255, 255, 0.04);
+}
+.nav-item.active {
+  color: #e0e7ff;
+  font-weight: 550;
+  background: linear-gradient(90deg, rgba(99, 102, 241, 0.22) 0%, rgba(99, 102, 241, 0.06) 100%);
+  box-shadow: inset 0 0 0 1px rgba(99, 102, 241, 0.25);
+}
+
+/* ─────────────── MAIN ─────────────── */
+main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+/* Topbar */
+#topbar {
+  height: 52px;
+  background: rgba(8, 13, 24, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 28px;
+  gap: 14px;
+  flex-shrink: 0;
+  justify-content: space-between;
+}
+
+#toggle-btn {
+  background: none; border: none; cursor: pointer;
+  color: var(--muted); font-size: 16px; padding: 4px 6px;
+  border-radius: 4px; line-height: 1; transition: color .1s;
+}
+#toggle-btn:hover { color: var(--text); }
+
+.breadcrumb {
+  display: flex; align-items: center; gap: 5px;
+  font-size: .7rem; color: var(--dim);
+  font-family: var(--font-mono);
+}
+.breadcrumb span { color: var(--muted); }
+
+.topbar-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+
+.env-picker {
+  display: flex; align-items: center; gap: 6px;
+}
+.env-picker label {
+  font-size: .62rem; font-family: var(--font-mono);
+  color: var(--dim); letter-spacing: .06em;
+  text-transform: uppercase; white-space: nowrap;
+}
+#env-select {
+  appearance: none;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 6px;
+  color: var(--accent-light);
+  font-family: var(--font-mono);
+  font-size: .68rem;
+  padding: 4px 26px 4px 8px;
+  cursor: pointer;
+  outline: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%2364748b' d='M1 1l4 4 4-4'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+}
+#env-select:hover { border-color: var(--accent); }
+#env-select:focus { border-color: var(--accent); }
+
+.topbar-tags { display: flex; gap: 7px; }
+.tag {
+  font-size: .62rem; font-family: var(--font-mono);
+  color: var(--dim); padding: 2px 8px;
+  border: 1px solid var(--border); border-radius: 99px;
+}
+.tag.env-tag { color: var(--accent-light); border-color: rgba(99,102,241,.35); }
+
+/* Content */
+#content-wrap {
+  flex: 1;
+  overflow-y: auto;
+  padding: 40px 56px 88px;
+  scroll-behavior: smooth;
+}
+
+#content { max-width: 820px; margin: 0 auto; }
+#content.content--wide { max-width: 1140px; }
+#content-wrap.content-wrap--wide { padding-left: 40px; padding-right: 40px; }
+
+/* Page header */
+.page-badge {
+  display: inline-block;
+  font-size: .6rem; font-family: var(--font-mono);
+  letter-spacing: .13em; text-transform: uppercase;
+  padding: 3px 10px; border-radius: 99px;
+  margin-bottom: 10px;
+}
+
+h1.page-title {
+  font-size: clamp(1.65rem, 3vw, 2rem);
+  font-weight: 800;
+  letter-spacing: -0.045em;
+  line-height: 1.15;
+  margin-bottom: 8px;
+  background: linear-gradient(135deg, #f8fafc 0%, #cbd5e1 55%, #94a3b8 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.page-lead {
+  font-size: 0.95rem;
+  color: #9fb0c8;
+  line-height: 1.7;
+  max-width: 38rem;
+  margin-bottom: 32px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* Markdown rendering */
+.md h2 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  margin: 36px 0 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border2);
+  letter-spacing: -0.02em;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.md h2::before {
+  content: '';
+  width: 3px;
+  height: 1.1em;
+  border-radius: 2px;
+  background: linear-gradient(180deg, var(--accent) 0%, #3b82f6 100%);
+  flex-shrink: 0;
+}
+.md h3 {
+  font-size: .9rem; font-weight: 700; color: #a5b4fc;
+  margin: 22px 0 8px; letter-spacing: -.01em;
+}
+.md h4 {
+  font-size: .82rem; font-weight: 700; color: #94a3b8;
+  margin: 16px 0 6px;
+}
+
+.md p {
+  color: #b8c9dc;
+  font-size: 0.9rem;
+  line-height: 1.78;
+  margin-bottom: 16px;
+}
+.md > p:first-child {
+  font-size: 0.95rem;
+  color: #a8bdd4;
+}
+
+.md ul, .md ol { padding-left: 22px; margin: 8px 0 16px; color: #c8d6e5; font-size: .875rem; line-height: 1.8; }
+
+.md code {
+  background: var(--code-bg); border: 1px solid var(--border2);
+  border-radius: 4px; padding: 2px 6px;
+  font-family: var(--font-mono); font-size: .78rem;
+  color: var(--code-text);
+}
+
+.md pre {
+  background: var(--code-bg); border: 1px solid var(--border2);
+  border-radius: 8px; padding: 16px;
+  margin: 16px 0; overflow-x: auto;
+}
+.md pre code {
+  background: none; border: none; padding: 0;
+  font-size: .78rem; color: #94d2f0; white-space: pre; font-family: var(--font-mono);
+}
+.lang-label {
+  color: #3b82f6; font-size: .63rem;
+  font-family: var(--font-mono);
+  margin-bottom: 6px; letter-spacing: .1em;
+}
+
+.md blockquote {
+  border-left: 3px solid var(--accent);
+  padding: 2px 0 2px 16px; margin: 16px 0;
+  color: #94a3b8; font-style: italic; font-size: .875rem;
+}
+
+.md hr { border: none; border-top: 1px solid var(--border2); margin: 28px 0; }
+
+/* Doc diagrams — consistent frame & scale for mixed source dimensions */
+.md figure.md-figure {
+  margin: 28px 0;
+  border-radius: 10px;
+  border: 1px solid var(--border2);
+  background: linear-gradient(180deg, #0a1220 0%, #050a14 100%);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  max-width: 100%;
+}
+.md figure.md-figure img {
+  display: block;
+  max-width: 100%;
+  width: auto;
+  height: auto;
+  max-height: var(--doc-figure-max-h, 520px);
+  object-fit: contain;
+  object-position: center;
+  margin: 0 auto;
+}
+.md figure.md-figure figcaption.md-figure-caption {
+  margin: 0;
+  padding: 0 8px;
+  max-width: 42rem;
+  font-size: .72rem;
+  font-family: var(--font-mono);
+  color: var(--dim);
+  text-align: center;
+  line-height: 1.45;
+  letter-spacing: .02em;
+}
+.md figure.md-figure.md-figure--wide img {
+  max-height: var(--doc-figure-max-h-wide, 640px);
+}
+@media (max-width: 900px) {
+  .md figure.md-figure {
+    padding: 14px;
+    margin: 22px 0;
+  }
+  .md figure.md-figure img {
+    max-height: min(var(--doc-figure-max-h, 520px), 48vh);
+  }
+  .md figure.md-figure.md-figure--wide img {
+    max-height: min(var(--doc-figure-max-h-wide, 640px), 56vh);
+  }
+}
+
+/* Embedded interactive architecture diagram */
+.md .ec-arch-panel {
+  margin: 24px 0 36px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border2);
+  background: #05070f;
+  overflow: hidden;
+  box-shadow: var(--shadow-md), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  max-width: 100%;
+}
+.ec-arch-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 12px 18px;
+  background: linear-gradient(180deg, #0c1222 0%, #080d18 100%);
+  border-bottom: 1px solid var(--border2);
+  line-height: 1.4;
+}
+.ec-arch-toolbar-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  font-family: var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #94a3b8;
+}
+.ec-arch-toolbar-title::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #34d399;
+  box-shadow: 0 0 10px rgba(52, 211, 153, 0.6);
+  animation: ec-pulse 2s ease-in-out infinite;
+}
+@keyframes ec-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+.ec-arch-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  align-items: center;
+}
+.ec-arch-legend span {
+  font-size: 0.62rem;
+  font-family: var(--font-mono);
+  padding: 3px 8px;
+  border-radius: 99px;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+.ec-arch-legend .lg-dcs { color: #93c5fd; background: rgba(37, 99, 235, 0.12); border-color: rgba(37, 99, 235, 0.28); }
+.ec-arch-legend .lg-wallet { color: #c4b5fd; background: rgba(124, 58, 237, 0.12); border-color: rgba(124, 58, 237, 0.28); }
+.ec-arch-legend .lg-saas { color: #67e8f9; background: rgba(8, 145, 178, 0.12); border-color: rgba(8, 145, 178, 0.28); }
+.ec-arch-legend .lg-resolver { color: #6ee7b7; background: rgba(5, 150, 105, 0.12); border-color: rgba(5, 150, 105, 0.28); }
+.ec-arch-legend .lg-verifier { color: #fca5a5; background: rgba(220, 38, 38, 0.12); border-color: rgba(220, 38, 38, 0.28); }
+.ec-arch-legend .lg-contrib { color: #fcd34d; background: rgba(217, 119, 6, 0.12); border-color: rgba(217, 119, 6, 0.28); }
+.ec-arch-legend .lg-did { color: #f9a8d4; background: rgba(219, 39, 119, 0.12); border-color: rgba(219, 39, 119, 0.28); }
+.ec-arch-hint {
+  font-size: 0.68rem;
+  color: var(--dim);
+  font-family: var(--font-mono);
+}
+.ec-arch-body { line-height: 0; background: #05070f; }
+.md .ec-arch-frame {
+  display: block;
+  width: 100%;
+  min-height: 720px;
+  border: none;
+  background: #05070f;
+}
+
+
+.md strong { color: #e2e8f0; font-weight: 700; }
+.md a { color: #818cf8; text-decoration: none; }
+.md a:hover { text-decoration: underline; }
+
+/* Tables */
+.md .table-wrap {
+  overflow-x: auto;
+  margin: 22px 0;
+  border-radius: var(--radius);
+  border: 1px solid var(--border2);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+}
+.md table { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
+.md th {
+  text-align: left;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border2);
+  background: rgba(99, 102, 241, 0.06);
+  color: #94a3b8;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.md td {
+  padding: 11px 16px;
+  color: #c4d4e8;
+  border-bottom: 1px solid rgba(21, 32, 48, 0.8);
+  vertical-align: top;
+  line-height: 1.55;
+}
+.md tr:last-child td { border-bottom: none; }
+.md tr:hover td { background: rgba(99, 102, 241, 0.05); }
+.md td strong { color: #e8eef6; }
+
+/* Footer */
+.page-footer {
+  margin-top: 52px; padding-top: 22px;
+  border-top: 1px solid var(--border);
+  display: flex; justify-content: flex-end;
+}
+.page-footer span {
+  font-size: .7rem; color: var(--dim);
+  font-family: var(--font-mono);
+}
+
+/* Badge colour utility applied via JS */
+
+@media (max-width: 900px) {
+  #content-wrap { padding: 28px 20px 64px; }
+  .ec-arch-toolbar { flex-direction: column; align-items: flex-start; }
+  .ec-arch-legend { width: 100%; }
+}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside id="sidebar">
+  <div class="sidebar-header">
+    <div class="logo-row">
+      <a class="logo-link" href="#" onclick="navigate('intro'); return false;" title="EveryCRED Documentation home">
+        <img class="logo-img" src="assets/everycred_logo.svg" alt="EveryCRED — Digital Trust Platform" width="257" height="52">
+      </a>
+      <div class="logo-ver">Documentation</div>
+    </div>
+    <input id="search" type="text" placeholder="Search docs…" oninput="filterNav(this.value)">
+  </div>
+  <nav id="nav-root"></nav>
+</aside>
+
+<!-- MAIN -->
+<main>
+  <div id="topbar">
+    <div style="display:flex;align-items:center;gap:10px">
+      <button id="toggle-btn" onclick="toggleSidebar()">☰</button>
+      <div class="breadcrumb" id="breadcrumb">
+        <span>docs</span>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="env-picker">
+        <label for="env-select">Environment</label>
+        <select id="env-select" title="API base URLs in examples and links use this environment"></select>
+      </div>
+      <div class="topbar-tags">
+        <span class="tag env-tag" id="env-tag" title="Active API base URL"></span>
+        <span class="tag">API v1</span>
+        <span class="tag">May 2026</span>
+      </div>
+    </div>
+  </div>
+  <div id="content-wrap">
+    <div id="content">
+      <div id="page-badge-wrap"></div>
+      <h1 class="page-title" id="page-title">Loading…</h1>
+      <div class="md" id="page-body"></div>
+      <div class="page-footer"><span id="footer-txt"></span></div>
+    </div>
+  </div>
+</main>
+
+<script>
+// ─────────────────────────────────────────────────────────────────────────────
+// ENVIRONMENT URLS — edit hosts here; docs use {{API_BASE}} / {{API_DOCS}} tokens
+// ─────────────────────────────────────────────────────────────────────────────
+const ENV_CONFIG = {
+  development: {
+    label: 'Development',
+    shortLabel: 'Dev',
+    apiBase: 'https://dev-dcs-api.everycred.com',
+    apiDocs: 'https://dev-dcs-api.everycred.com/api/docs',
+  },
+  staging: {
+    label: 'Staging',
+    shortLabel: 'Staging',
+    apiBase: 'https://staging-dcs-api.everycred.com',
+    apiDocs: 'https://staging-dcs-api.everycred.com/api/docs',
+  },
+  production: {
+    label: 'Production',
+    shortLabel: 'Prod',
+    apiBase: 'https://dcs-api.everycred.com',
+    apiDocs: 'https://dcs-api.everycred.com/api/docs',
+  },
+  local: {
+    label: 'Local',
+    shortLabel: 'Local',
+    apiBase: 'http://localhost:8000',
+    apiDocs: 'http://localhost:8000/api/docs',
+  },
+};
+
+const ENV_STORAGE_KEY = 'everycred-docs-env';
+const DEFAULT_ENV = 'development';
+
+function getEnvId() {
+  const fromUrl = new URLSearchParams(location.search).get('env');
+  if (fromUrl && ENV_CONFIG[fromUrl]) return fromUrl;
+  const stored = localStorage.getItem(ENV_STORAGE_KEY);
+  if (stored && ENV_CONFIG[stored]) return stored;
+  return DEFAULT_ENV;
+}
+
+function getEnv() {
+  return ENV_CONFIG[getEnvId()];
+}
+
+function resolveEnvTokens(text) {
+  const env = getEnv();
+  return text
+    .replace(/\{\{API_BASE\}\}/g, env.apiBase)
+    .replace(/\{\{API_DOCS\}\}/g, env.apiDocs)
+    .replace(/\{\{ENV_LABEL\}\}/g, env.label);
+}
+
+function syncEnvToUrl(envId) {
+  const url = new URL(location.href);
+  if (envId === DEFAULT_ENV) url.searchParams.delete('env');
+  else url.searchParams.set('env', envId);
+  history.replaceState(null, '', url);
+}
+
+function updateEnvChrome() {
+  const env = getEnv();
+  const tag = document.getElementById('env-tag');
+  if (tag) {
+    tag.textContent = env.shortLabel;
+    tag.title = env.apiBase;
+  }
+  const sel = document.getElementById('env-select');
+  if (sel) sel.value = getEnvId();
+}
+
+function setEnv(envId) {
+  if (!ENV_CONFIG[envId]) return;
+  localStorage.setItem(ENV_STORAGE_KEY, envId);
+  syncEnvToUrl(envId);
+  updateEnvChrome();
+  renderPage(currentPage);
+}
+
+function initEnvPicker() {
+  const sel = document.getElementById('env-select');
+  if (!sel) return;
+  sel.innerHTML = Object.entries(ENV_CONFIG)
+    .map(([id, cfg]) => `<option value="${id}">${cfg.label}</option>`)
+    .join('');
+  sel.value = getEnvId();
+  sel.onchange = () => setEnv(sel.value);
+  updateEnvChrome();
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// NAV STRUCTURE
+// ─────────────────────────────────────────────────────────────────────────────
+const NAV = [
+  {g:"Overview",       icon:"◈", items:[["intro","Introduction"],["platform-architecture","Platform Architecture"],["ecosystem","How It Works"],["credential-lifecycle","Credential Lifecycle"]]},
+  {g:"Deployment",     icon:"⬡", items:[["saas-onprem","SaaS vs On-Premises"],["regions","Regional Coverage"]]},
+  {g:"Core Concepts",  icon:"◇", items:[["verifiable-credentials","Verifiable Credentials"],["credential-formats","Credential Formats"],["dids","Decentralized Identifiers"],["selective-disclosure","Selective Disclosure"],["blockchain-anchoring","Blockchain Anchoring"],["rbac","Roles & Permissions"]]},
+  {g:"Platform",       icon:"▣", items:[["dcs-overview","DCS — Overview"],["contributor-app","Contributor Application"],["holder-web","Holder Web Application"],["wallet-app","Wallet App (Mobile)"],["verifier-platform","Verifier (WL + Own)"],["did-platform","DID Methods & Resolver"],["sdk","SDK & Developer Tools"]]},
+  {g:"Workflow Engine",icon:"◉", items:[["workflow-overview","Overview"],["workflow-builder","Building a Workflow"],["workflow-flows","End-to-End Flows"],["workflow-api","API Reference"]]},
+  {g:"API Reference",  icon:"◻", items:[["api-openapi","OpenAPI (live)"],["api-auth","Authentication"],["api-issuer","Issuer"],["api-subject","Subject Templates"],["api-records","Records"],["api-credentials","Credentials"],["api-holder","Holder"],["api-verifier","Verifier"],["api-rbac","RBAC"]]},
+  {g:"Guides",         icon:"▷", items:[["guide-first-credential","Issue Your First Credential"],["guide-bulk","Bulk Issuance via CSV"],["guide-verify","Verify a Credential"],["guide-workflow","Set Up a Workflow"],["guide-encryption","Field-Level Encryption"]]},
+  {g:"Roadmap",        icon:"◈", items:[["roadmap-overview","2026 Roadmap Overview"],["roadmap-q1","Q1 2026"],["roadmap-q2q4","Q2–Q4 2026"],["roadmap-modules","Module Status"]]},
+  {g:"Reference",      icon:"◁", items:[["glossary","Glossary"],["standards","Standards & Compliance"],["changelog","Changelog"]]},
+];
+
+const BADGE = {
+  Core:     {bg:"#0e2240",color:"#60a5fa"},
+  Concept:  {bg:"#1a1535",color:"#a78bfa"},
+  Platform: {bg:"#0e2a1e",color:"#34d399"},
+  Workflow: {bg:"#221a0e",color:"#fbbf24"},
+  API:      {bg:"#0e1e2e",color:"#38bdf8"},
+  Guide:    {bg:"#1a2e1a",color:"#86efac"},
+  Roadmap:  {bg:"#2a1a1a",color:"#f87171"},
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PAGE CONTENT
+// ─────────────────────────────────────────────────────────────────────────────
+const PAGES = {};
+
+PAGES["intro"] = {title:"EveryCRED Documentation", badge:null, body:`
+EveryCRED is a production-grade platform for issuing, managing, and verifying **W3C Verifiable Credentials**. It gives organisations a complete stack — from the issuer portal and approval workflows to the holder wallet and public verification API.
+
+## Who this documentation is for
+
+This documentation is intended for:
+- **Developers** integrating the EveryCRED API or SDK into their products
+- **Platform administrators** managing issuers, roles, and workflows
+- **Technical architects** evaluating EveryCRED for their credential ecosystem
+
+## What you can do with EveryCRED
+
+| Capability | Description |
+|---|---|
+| **Issue credentials** | Create W3C-standard Verifiable Credentials with blockchain anchoring |
+| **Bulk issuance** | Upload hundreds of records via CSV/Excel and issue in one operation |
+| **Workflow automation** | Multi-stage approval pipelines before a credential is issued |
+| **Public verification** | Anyone can verify a credential by UUID — no login required |
+| **Selective disclosure** | Holders share only the fields a verifier needs (SD-JWT) |
+| **Wallet** | Mobile wallet for claiming, storing, and presenting credentials |
+| **White-label** | Full branding customisation for issuers and verifier portals |
+
+## Navigate this documentation
+
+- New to EveryCRED? Start with **How It Works** and the **Credential Lifecycle**.
+- Ready to integrate? See **Issue Your First Credential**.
+- Looking for endpoints? Browse the **API Reference** section.
+- Planning a deployment? Check the **2026 Roadmap**.
+
+> **API Version:** v1  ·  **Platform Version:** 1.0.0  ·  **Last Updated:** May 2026
+`};
+
+PAGES["platform-overview"] = {title:"Platform Overview", badge:"Core", body:`
+EveryCRED is five integrated product surfaces built on a shared FastAPI backend.
+
+## Product Surfaces
+
+### DCS — Digital Credentialing Solution
+The issuer-facing web platform. Organisations use DCS to create issuer profiles, define credential schemas, manage records, run approval workflows, and issue credentials at scale.
+
+### Wallet App
+A mobile application (iOS + Android) where holders claim, store, and present their credentials. Supports selective disclosure via SD-JWT and QR-based presentation flows.
+
+### Verifier Portal
+A public-facing verification endpoint and brandable web portal where anyone can verify a credential by UUID, QR code, or by uploading the credential JSON.
+
+### Contributor Module
+An external data-submission interface for third-party organisations (e.g., exam boards, HR systems) that need to contribute data into a credential workflow without having full issuer access.
+
+### SDK & Developer Tools
+NPM packages and REST APIs for integrating credential issuance and verification directly into third-party applications.
+
+---
+
+## System Architecture
+
+\`\`\`
+┌─────────────────────────────────────────────────────┐
+│                  EveryCRED Backend                  │
+│   FastAPI (async) · SQLAlchemy 2.x · Celery/Redis   │
+│                                                     │
+│  /v1/auth     /v1/issuer     /v1/subject            │
+│  /v1/records  /v1/credentials  /v1/verifier         │
+│  /v1/workflow  /v1/workflow-request  /v1/rbac        │
+└────────┬───────────────────┬────────────────────────┘
+         │                   │
+    ┌────▼────┐         ┌────▼──────┐
+    │ MySQL   │         │ Celery     │
+    │ (async) │         │ Workers    │
+    └─────────┘         └─────┬─────┘
+                              │
+               ┌──────────────┼──────────────┐
+               ▼              ▼               ▼
+           AWS S3       Blockchain        Email/SMS
+           Storage       Anchor           Service
+\`\`\`
+
+## Request Pipeline
+
+Every API call passes through this middleware stack:
+
+1. **CORSMiddleware** — Cross-origin headers
+2. **S3PathMiddleware** — Rewrites S3 object URLs in request/response bodies
+3. **SecurityHeadersMiddleware** — HSTS, X-Frame-Options, CSP headers
+4. **EncryptionResponseMiddleware** — AES field masking when enabled
+5. **JWT Auth** → \`require_permission("slug")\` → RBAC check
+6. **Pydantic validation** — Request schema enforcement
+7. **Service layer** — Business logic, ORM queries, Celery dispatch
+8. **StandardResponse** → JSON envelope
+
+## Standard Response Format
+
+\`\`\`json
+{
+  "status": 200,
+  "data": { ... },
+  "message": "Human-readable description"
+}
+\`\`\`
+
+Async operations return \`202 Accepted\` with a task ID:
+
+\`\`\`json
+{ "status": 202, "data": { "task_id": "5f8c7d3b-..." }, "message": "" }
+\`\`\`
+`};
+
+PAGES["ecosystem"] = {title:"How It Works", badge:"Core", body:`
+A verifiable credential ecosystem has three roles. Understanding them is the foundation for everything else in EveryCRED.
+
+## The Three Roles
+
+![EveryCRED — Issuer, Holder, and Verifier roles](assets/three-roles.png)
+
+**Issuer** — An organisation (university, employer, government body) that creates and cryptographically signs credentials. Each issuer has a unique DID and operates within the DCS platform.
+
+**Holder** — An individual who receives credentials into their wallet. They can share them with verifiers via QR code, link, or selective presentation.
+
+**Verifier** — Any party who checks a credential's authenticity. The EveryCRED verifier API is public — no authentication required.
+
+---
+
+## A Complete Issuance Flow
+
+![Complete Issuance Flow|wide](assets/complete-issuance-flow.png)
+
+---
+
+## Trust Model
+
+| Layer | Mechanism |
+|---|---|
+| **Issuer identity** | DID — unique per issuer, blockchain-anchored |
+| **Credential integrity** | Ed25519 cryptographic signature |
+| **Tamper evidence** | Blockchain anchor hash — verifiable on any public explorer |
+| **Revocation** | RevocationList2020 (live), StatusList2021 (Q4 2026) |
+| **Access control** | RBAC with permission slugs on every protected endpoint |
+`};
+
+PAGES["credential-lifecycle"] = {title:"Credential Lifecycle", badge:"Core", body:`
+A credential moves through a well-defined sequence of states, from raw data entry through to verified issuance.
+
+## Lifecycle Diagram
+
+![EveryCRED credentials lifecycle](assets/credential-lifecycle.png)
+
+## Record Statuses
+
+| Status | Meaning |
+|---|---|
+| \`IN_PROCESS\` | Newly created; awaiting schema validation |
+| \`DRAFT\` | Validated; ready for credential issuance |
+| \`ISSUED\` | A credential has been issued from this record |
+| \`REVOKED\` | The issued credential was explicitly revoked |
+
+## Credential Statuses
+
+| Status | Meaning |
+|---|---|
+| \`ISSUED\` | Active, valid credential |
+| \`REVOKED\` | Permanently revoked — fails all verification. Cannot be undone. |
+| \`EXPIRED\` | Past \`valid_until\` — automatically rejected by verifiers |
+
+## Immutability After Issuance
+
+Once issued, the following fields are **permanently immutable** — enforced both at database level and via cryptographic signature:
+- Issue date
+- Holder identity
+- \`valid_from\` / \`valid_until\`
+- All credential claim data
+
+## Async Issuance Task (Celery)
+
+When \`POST /v1/credentials/user/credentials/issue\` is called, the Celery worker executes:
+
+\`\`\`
+1. Validate all records are in DRAFT status
+2. Build W3C Verifiable Credential JSON per record
+3. Sign with issuer's Ed25519 private key
+4. Anchor credential hash to blockchain
+5. Generate PDF certificate (wkhtmltopdf + QR via PyMuPDF)
+6. Upload PDF to AWS S3 (public-read)
+7. Update credential records → status ISSUED
+8. Send email to holder (if email_to_holder=true)
+9. Notify issuer of completion
+\`\`\`
+`};
+
+PAGES["verifiable-credentials"] = {title:"Verifiable Credentials", badge:"Concept", body:`
+A Verifiable Credential (VC) is a cryptographically signed digital document that proves a claim about a subject — machine-verifiable without contacting the issuer.
+
+## Anatomy of a Credential
+
+\`\`\`json
+{
+  "@context": ["https://www.w3.org/ns/credentials/v2"],
+  "type": ["VerifiableCredential"],
+  "issuer": "did:evrc:123456789abcdefg",
+  "validFrom": "2026-05-13T00:00:00Z",
+  "validUntil": "2026-12-31T23:59:59Z",
+  "credentialSubject": {
+    "name": "John Smith",
+    "course": "Advanced Python",
+    "completionDate": "2026-05-10"
+  },
+  "proof": {
+    "type": "Ed25519Signature2020",
+    "verificationMethod": "did:evrc:123456789abcdefg#key-1",
+    "proofValue": "z3MvGcVxzusbFjk..."
+  }
+}
+\`\`\`
+
+## Key Properties
+
+**Cryptographically signed** — The \`proof\` block contains a signature over the entire credential. Any change to any field invalidates the signature.
+
+**Issuer-linked** — The \`issuer\` field is a DID. Verifiers resolve this DID to obtain the issuer's public key and verify the signature.
+
+**Time-bounded** — \`validFrom\` and \`validUntil\` define the validity window. Expired credentials fail verification automatically.
+
+**Revocable** — Issuers can revoke credentials at any time via RevocationList2020. Verifiers check the status during each validation call.
+
+## W3C Compliance
+
+EveryCRED issues credentials conforming to the **W3C Verifiable Credentials Data Model 2.0**.
+
+| Format | Status |
+|---|---|
+| W3C VC (JSON-LD) | ✅ Live |
+| Open Badges v3.0 | ✅ Live |
+| IETF SD-JWT VC | ✅ Live |
+| ISO 18013-5 (mDoc) | 🔜 Q3 2026 |
+`};
+
+PAGES["credential-formats"] = {title:"Credential Formats", badge:"Concept", body:`
+EveryCRED supports multiple credential formats, each suited to different use cases and trust requirements.
+
+## W3C Verifiable Credential (JSON-LD)
+The primary format. Based on the W3C VC Data Model 2.0. Uses JSON-LD for linked-data semantics and Ed25519 or JWT-based signing. Best for online verification, web-based ecosystems, and cross-platform interoperability.
+
+## SD-JWT (Selective Disclosure JWT)
+A JWT-based credential where individual claims are hashed and salted. Holders can reveal a subset of claims to verifiers without revealing the rest.
+
+\`\`\`
+Full Credential (Issuer signs all claims):
+  name=John, dob=1990-01-01, country=IN, score=95
+
+Presented to Verifier (Holder selectively discloses):
+  name=John, score=95       ← only these two revealed
+  dob, country              ← hidden; verifier cannot access
+\`\`\`
+
+Best for: Privacy-preserving workflows, GDPR minimisation, cases requiring minimal data sharing.
+
+## ISO mDoc *(Planned — Q3 2026)*
+Based on ISO/IEC 18013-5. A CBOR-encoded mobile document format designed for high-assurance identity credentials (driving licences, national IDs). Supports offline BLE verification and device-binding authentication.
+
+## Open Badges v3.0
+A W3C-aligned credential format for academic and professional achievement badges. Fully interoperable with the Open Badges ecosystem.
+
+---
+
+## Format Selection Guide
+
+| Use Case | Recommended Format |
+|---|---|
+| Educational certificates | W3C VC (JSON-LD) |
+| Privacy-sensitive data | SD-JWT |
+| Government ID / driving licence | ISO mDoc (Q3 2026) |
+| Academic achievement badges | Open Badges v3.0 |
+| Offline / in-person verification | ISO mDoc (Q3 2026) |
+`};
+
+PAGES["dids"] = {title:"Decentralized Identifiers (DIDs)", badge:"Concept", body:`
+A Decentralized Identifier (DID) is a globally unique, cryptographically verifiable identifier that every EveryCRED issuer receives automatically upon profile creation.
+
+## DID Structure
+
+\`\`\`
+did:evrc:123456789abcdefghi
+ ▲    ▲    ▲
+ │    │    └── Method-specific unique identifier
+ │    └─────── DID Method (evrc = EveryCRED's native chain)
+ └──────────── Always "did"
+\`\`\`
+
+A DID resolves to a **DID Document** — a JSON file containing:
+- The issuer's public keys
+- Service endpoints for credential verification
+- Verification relationships (what each key is authorized to do)
+
+## Supported DID Methods
+
+| Method | Status | Description |
+|---|---|---|
+| \`did:evrc\` | ✅ Live | EveryCRED's native blockchain DID |
+| \`did:jwk\` | ⚠️ Partial | JSON Web Key-based DID |
+| \`did:key\` | 🔜 Q3 2026 | Lightweight cryptographic DID |
+| \`did:web\` | 🔜 Q3 2026 | Domain-anchored DID |
+| \`did:ebsi\` | 🔜 Q4 2026 | EU EBSI blockchain DID |
+
+## Why DIDs Enable Trustless Verification
+
+When a verifier checks a credential:
+1. They read the \`issuer\` field (a DID)
+2. They resolve the DID to get the issuer's public key
+3. They verify the credential signature against that public key
+4. ✅ Verification succeeds without contacting EveryCRED's servers
+
+This is the **trustless verification model** — the issuer does not need to be online for verification to succeed.
+
+## Immutability
+
+The DID assigned to an issuer profile is **immutable** — it cannot be changed after creation. This ensures that credentials issued years apart by the same issuer remain verifiable against the same identifier.
+`};
+
+PAGES["selective-disclosure"] = {title:"Selective Disclosure", badge:"Concept", body:`
+Selective disclosure lets holders share only a subset of their credential claims with a verifier, without invalidating the credential's cryptographic proof.
+
+## How SD-JWT Works
+
+![Selective disclosure credential flow](assets/selective-disclosure-credential-flow.png)
+
+## Privacy Guarantees
+
+- The verifier sees **only** what the holder explicitly chooses to reveal
+- The credential signature remains valid regardless of which fields are disclosed
+- Undisclosed fields leave no trace in the presentation
+
+## Configuration
+
+Mark fields as selectively disclosable in the Subject Template. SD-JWT encoding is applied automatically when the credential type supports it.
+
+## Current Support
+
+| Format | Selective Disclosure Support |
+|---|---|
+| W3C VC (JSON-LD) | Via SD-JWT encoding |
+| IETF SD-JWT | Native |
+| ISO mDoc | Via namespaces (Q3 2026) |
+
+> **Upcoming:** The SDK Selective Disclosure Package (Q1 2026 — Critical) provides an NPM module for verifiers and wallets to programmatically request and process selective presentations.
+`};
+
+PAGES["blockchain-anchoring"] = {title:"Blockchain Anchoring", badge:"Concept", body:`
+Every credential issued by EveryCRED is anchored on-chain, creating a tamper-evident record independently verifiable without relying on EveryCRED's infrastructure.
+
+## The Anchoring Process
+
+![Blockchain anchoring process](assets/anchoring-process-diagram.png)
+
+## Verification Result
+
+\`\`\`json
+{
+  "verification_result": {
+    "signature_valid": true,
+    "issuer_valid": true,
+    "not_revoked": true,
+    "not_expired": true,
+    "blockchain_verified": true
+  }
+}
+\`\`\`
+
+## Independent Verification
+
+The \`blockchain_hash\` in every credential response is the on-chain transaction ID. Any party can look it up in a public blockchain explorer to confirm:
+- The hash was anchored at a specific block timestamp
+- The credential data matches the hash (no tampering occurred)
+
+This enables verification **without trusting or contacting EveryCRED**.
+
+## Timing
+
+After issuance, \`blockchain_verified\` may briefly return \`false\` while the transaction confirms. This resolves automatically within seconds to minutes depending on network conditions.
+`};
+
+PAGES["rbac"] = {title:"Roles & Permissions (RBAC)", badge:"Concept", body:`
+EveryCRED enforces fine-grained access control using Role-Based Access Control. Every protected endpoint requires a specific permission slug.
+
+## Role Types
+
+| Role | Description |
+|---|---|
+| \`ADMIN\` | Full system access — bypasses all permission checks |
+| \`ISSUER\` | Creates and manages credentials, records, subjects, holders |
+| \`HOLDER\` | Views own credentials only |
+| \`VERIFIER\` | Public verification endpoints only |
+| \`AUTHORITY\` | Manages roles, permissions, access control |
+| \`BUSINESS\` | Extended capabilities including workflow creation |
+
+## Permission Naming Convention
+
+All slugs follow the pattern \`resource_action\`:
+
+\`\`\`
+credentials_issue      ← issue credentials
+credentials_revoke     ← revoke credentials
+records_create         ← create/upload records
+records_read           ← view and decrypt records
+subject_update         ← update subject templates
+workflow_create        ← create workflow definitions
+request_list_read      ← view/submit/approve workflow requests
+\`\`\`
+
+## Permission Reference
+
+### Credentials
+\`credentials_issue\` · \`credentials_share\` · \`credentials_revoke\` · \`credentials_read\`
+
+### Issuer
+\`issuer_create\` · \`issuer_read\` · \`issuer_list_read\` · \`issuer_update\` · \`issuer_delete\`
+
+### Records
+\`records_create\` · \`records_read\` · \`records_update\` · \`records_delete\`
+
+### Subject Templates
+\`subject_create\` · \`subject_read\` · \`subject_list_read\` · \`subject_update\` · \`subject_delete\`
+
+### Holders
+\`holder_create\` · \`holder_read\` · \`holder_update\` · \`holder_delete\`
+
+### Workflow
+\`workflow_create\` · \`workflow_read\` · \`workflow_update\` · \`request_list_read\` · \`request_delete\`
+
+### Admin
+\`admin_read\` · \`admin_settings\` · \`audit_logs_read\`
+
+## How Enforcement Works
+
+\`\`\`python
+# Every protected endpoint declares its required permission slug
+@router.post("/issue")
+async def issue_credentials(
+    user = Depends(require_permission("credentials_issue"))
+):
+    ...
+\`\`\`
+
+The \`require_permission\` dependency: decodes JWT → loads user → checks role permissions → raises \`403\` if slug not granted. \`ADMIN\` role bypasses all checks.
+`};
+
+PAGES["dcs"] = {title:"DCS — Digital Credentialing Solution", badge:"Platform", body:`
+The DCS is the issuer-facing platform providing the complete toolset for creating, managing, and issuing verifiable credentials at scale.
+
+## Completion: 74% (45/61 features)
+
+The core issuance pipeline is fully production-ready. Remaining work includes analytics enhancements, localisation, and design tooling.
+
+## Capabilities
+
+### Issuer Management
+Create and manage issuer profiles. Each profile auto-generates a unique DID and supports branding (logo, banner, social links). Operates in \`STAGING\` or \`PRODUCTION\` mode.
+
+### Subject Templates
+Define the data schema for credentials — field names, types (\`TEXT\`, \`EMAIL\`, \`NUMBER\`, \`DATE\`, \`SELECT\`, \`MULTISELECT\`, \`FILE\`, \`IMAGE\`, \`TEXTAREA\`), validation rules, and display labels. Download a pre-filled Excel template for bulk uploads.
+
+### Records Management
+Individual credential data records. Created manually via API or in bulk via CSV/Excel upload. Follow the lifecycle: \`IN_PROCESS\` → \`DRAFT\` → \`ISSUED\`.
+
+### Credential Issuance
+Async issuance with Celery backend. Returns \`202 Accepted\` with a task ID. Supports immediate issuance, scheduled issuance (Celery Beat), batch issuance, and email delivery to holders.
+
+### Analytics & Reporting
+- Credential and verification analytics dashboard: ✅ Live
+- DigiLocker analytics (India): ✅ Live
+- Risk monitoring with AI: ⚠️ Q1 2026
+- Individual credential analytics: 🔜 Q2 2026
+- Reports module: 🔜 Q2 2026
+
+### Team & RBAC
+Invite team members, assign roles, configure feature-level permissions with full RBAC support.
+
+### White Labelling
+Custom branding (logo, theme, colours) and white-label email. Credential Template Builder and Landing Page Builder coming Q4 2026.
+
+---
+
+## 2026 DCS Delivery Plan
+
+| Quarter | Features |
+|---|---|
+| Q1 | Subject Library, Email Settings, Risk Analytics (AI), NFC DigiLocker, DigiLocker VC/VP, Tenant DB Management |
+| Q2 | Individual Credentials Analytics, Reports Module |
+| Q3 | Zapier Integration |
+| Q4 | Credential Template Builder, Landing Page Builder, Hindi & Marathi Language Support, Billing & Payment Gateway (SaaS only) |
+`};
+
+PAGES["wallet-app"] = {title:"Wallet App", badge:"Platform", body:`
+The EveryCRED Wallet App (iOS + Android) is where credential holders claim, store, and present their verifiable credentials.
+
+## Completion: 14% (3/22 features)
+
+The Wallet App is the largest construction effort in 2026, consuming 30% of total engineering capacity across Q1–Q2.
+
+## What's Live Today
+
+| Feature | Status |
+|---|---|
+| Store & Manage Credentials | ✅ Live |
+| Share via QR / Secure Link | ✅ Live |
+| Selective Disclosure (SD-JWT) | ✅ Live |
+
+## Q1 2026 — Wallet Foundation
+
+| Feature | Priority |
+|---|---|
+| Secure Login (PIN/Biometrics) | 🔴 Critical |
+| DID Creation & Management | 🔴 Critical |
+| End-to-End Encryption | 🔴 Critical |
+| W3C VC + VP Support | 🔴 Critical |
+| Secure Key Storage (Device/Enclave) | 🔴 Critical |
+| Claim Credentials (QR/Link/OpenID4VC) | 🟠 High |
+| Account Recovery (Backup/Seed) | 🟠 High |
+| Credential Preview & Acceptance | 🟡 Medium |
+| Expiry & Update Notifications | 🟡 Medium |
+| Auto Lock (Idle Timeout) | 🟡 Medium |
+
+## Q2 2026 — Verification & Interoperability
+
+| Feature | Priority |
+|---|---|
+| Receive Verification Requests | 🟠 High |
+| Approve / Reject Requests | 🟠 High |
+| DIDComm / Cross-Wallet Support | 🟠 High |
+| Aadhaar eKYC (India only) | 🟠 High |
+| Multi-language Support | 🟡 Medium |
+| White-label Branding | 🟡 Medium |
+
+## Tech Stack
+React Native · Ionic · Node.js · OpenID4VCI · OpenID4VP · SD-JWT · DIDComm 2.0
+Lead engineer: Vraj Patel
+`};
+
+PAGES["verifier"] = {title:"Verifier", badge:"Platform", body:`
+The Verifier provides public credential verification — no authentication required. Any third party can validate an EveryCRED credential.
+
+## Completion: 60% (3/5 features)
+
+## Live Verification Endpoints
+
+### Validate by UUID
+\`\`\`
+GET /v1/verifier/user/credential/validate/{uuid}
+\`\`\`
+Returns a full verification result with all six checks.
+
+### View Credential Details
+\`\`\`
+GET /v1/verifier/user/credential/{uuid}
+\`\`\`
+Returns the full credential including issuer info, holder info, and all claims.
+
+### Batch Verification via JSON Upload
+\`\`\`
+POST /v1/verifier/user/credential/upload/json
+\`\`\`
+
+## Verification Checks
+
+All six checks must pass for \`is_valid: true\`.
+
+| Check | Description |
+|---|---|
+| \`signature_valid\` | Ed25519 signature matches issuer's public key |
+| \`issuer_valid\` | Issuer DID is recognized and active |
+| \`subject_valid\` | Holder/subject information is internally consistent |
+| \`not_revoked\` | Not revoked via RevocationList2020 |
+| \`not_expired\` | Current date is within \`valid_from\` – \`valid_until\` |
+| \`blockchain_verified\` | On-chain anchor hash confirmed |
+
+## 2026 Roadmap
+
+| Quarter | Feature |
+|---|---|
+| Q3 | Token-Based Verification — authenticated verification for enterprise verifiers |
+| Q3 | Verifier Tenant Management — multi-tenant portals with per-tenant branding |
+`};
+
+PAGES["contributor"] = {title:"Contributor Module", badge:"Platform", body:`
+The Contributor Module allows external data providers to submit credential data into an EveryCRED workflow without needing full issuer access.
+
+## Completion: 71% (5/7 features)
+
+## What Contributors Do
+
+Contributors are external parties — exam boards, HR systems, data aggregators — who hold data an issuer needs before a credential can be issued. EveryCRED sends the contributor a tokenised submission link. They submit data through a secure endpoint.
+
+\`\`\`
+Issuer creates workflow with contributor stage
+              │
+              ▼
+Workflow request sent  →  Contributor receives email with token
+              │
+              ▼
+POST /v1/contributor/submission  (no standard JWT)
+              │
+              ▼
+Data merged into request record_slug
+              │
+              ▼
+Stage advances (approval or draft creation)
+\`\`\`
+
+## Key Technical Detail: Deferred Push
+
+After a contributor submits, if data needs to be pushed to an external connector, this is deferred to a FastAPI \`BackgroundTask\` that runs **after** the HTTP response is committed. This prevents database deadlocks:
+
+\`\`\`python
+background_tasks.add_task(run_deferred_contributor_store_request, ...)
+# StoreRequestService.store_request() runs AFTER transaction commits
+\`\`\`
+
+## API Base
+\`/v1/contributor\`
+
+## 2026 Roadmap
+
+| Quarter | Feature | Region |
+|---|---|---|
+| Q1 | Hindi Language Support | India |
+| Q1 | Marathi Language Support | India |
+`};
+
+PAGES["sdk"] = {title:"SDK & Developer Tools", badge:"Platform", body:`
+The EveryCRED SDK provides NPM packages and REST APIs for integrating credential issuance and verification into third-party applications.
+
+## Completion: 64% (7/11 features)
+
+## Live Packages
+
+| Package | Description |
+|---|---|
+| **Unsigned Credential Package** | Build unsigned credential payloads |
+| **Signed Credential Package** | Sign credentials with Ed25519 |
+| **Transectify** | Blockchain transaction anchoring |
+| **JavaScript Verification NPM** | Client-side credential verification |
+| **Webhook/APIs Connector** | Event-driven integration |
+
+## Planned Packages (Q1 2026 — Critical)
+
+### Selective Disclosure Package
+Provides the NPM module for verifiers and wallets to request and process selective presentations using SD-JWT claim disclosure/verification.
+
+### Verifiable Credentials Package
+Full W3C VC lifecycle SDK — create, sign, issue, verify, and revoke credentials programmatically.
+
+## Q2 2026 Developer Tools
+
+**Sandbox Platform** — Test credentials against a safe, isolated environment without creating real issuances.
+
+**API Key Management** — Self-serve developer key creation, rotation, and access scoping.
+
+## Authentication
+
+\`\`\`bash
+# Bearer token authentication for all API endpoints
+curl -H "Authorization: Bearer {ACCESS_TOKEN}" \\
+  {{API_BASE}}/v1/credentials/credentials
+\`\`\`
+
+- Access token: 1 hour TTL, HS256 algorithm
+- Refresh token: 24 day TTL, HTTP-only cookie
+`};
+
+PAGES["workflow-overview"] = {title:"Workflow Engine — Overview", badge:"Workflow", body:`
+The Workflow Engine orchestrates multi-stage data collection and approval processes before a credential record is created and issued.
+
+## When to Use Workflows
+
+Use a workflow when:
+- A credential requires data from multiple parties (holder, contributor, approver)
+- Credentials must go through one or more review/approval steps before issuance
+- A compliance or verification step is required before a record enters DRAFT
+
+## Two Paradigms
+
+### Holder-Initiated (Issuer Request Workflow)
+A holder submits a request for a credential. The backend creates an approval chain and manages it to completion.
+
+- **Tables:** \`request_workflow_instance\`, \`request_approval_assignment\`
+- **Router:** \`/v1/workflow\`
+- **Trigger:** Holder submits an IssuerRequest
+
+### Issuer-Driven (Workflow Request)
+The issuer manually creates a data collection/approval request and sends it to contributors, holders, and approvers.
+
+- **Tables:** \`requests\`, \`workflow_request_stages\`, \`stage_submissions\`
+- **Router:** \`/v1/workflow-request\`
+- **Trigger:** Issuer calls \`POST /v1/workflow-request/request\`
+
+Both converge on the same outcome: a **DRAFT record** is created from the accumulated field data, which can then be issued as a credential.
+
+## Key Concepts
+
+| Term | Meaning |
+|---|---|
+| **Workflow** | Template defining stages, order, approvers, and data collection config |
+| **Stage** | A single step in the workflow with an assigned actor and approval count |
+| **Sequential** | Stages execute one after another |
+| **Parallel** | Stages or approvers within a stage execute simultaneously |
+| **Data Collection Config** | Per-stage field definitions: which fields, who fills them, required or not |
+| **record_slug** | Accumulated JSON field values merged across all stages |
+`};
+
+PAGES["workflow-builder"] = {title:"Building a Workflow", badge:"Workflow", body:`
+## Database Model
+
+### workflow
+| Field | Type | Description |
+|---|---|---|
+| \`uuid\` | UUID | Public identifier |
+| \`workflow_name\` | String | Display name |
+| \`subject_id\` | FK | Associated subject template |
+| \`issuer_id\` | FK | Owning issuer |
+| \`is_paraller\` | Boolean | Parallel (true) or sequential (false) stages |
+| \`status\` | Enum | \`ACTIVE\`, \`INACTIVE\`, \`DELETED\` |
+
+### workflow_stage
+| Field | Type | Description |
+|---|---|---|
+| \`stage_name\` | String | Display name |
+| \`approval_requirement\` | Integer | Approvals required to advance |
+| \`is_parallel\` | Boolean | Parallel approvers at this stage |
+| \`stage_order\` | Integer | 1-based, unique per workflow |
+| \`is_data_collection\` | Boolean | Whether this stage collects data fields |
+
+### workflow_approver
+| Field | Description |
+|---|---|
+| \`stage_id\` | Parent stage |
+| \`user_id\` | Assigned approver |
+| \`role_id\` | Role-based assignment (alternate to user_id) |
+
+---
+
+## Creating a Workflow
+
+\`\`\`
+POST /v1/workflow/?subject_id={subject_id}
+Permission: workflow_create
+Note: Only BUSINESS user type can create workflows
+\`\`\`
+
+\`\`\`json
+{
+  "workflow_name": "Certificate Approval",
+  "description": "Data collection then manager sign-off",
+  "is_paraller": false,
+  "stages": [
+    {
+      "stage_name": "Data Submission",
+      "stage_order": 1,
+      "approval_requirement": 1,
+      "is_parallel": false,
+      "is_data_collection": true
+    },
+    {
+      "stage_name": "Manager Approval",
+      "stage_order": 2,
+      "approval_requirement": 1,
+      "is_parallel": false,
+      "approver_role_ids": ["manager-role-uuid"]
+    }
+  ]
+}
+\`\`\`
+
+### Internal Service Execution
+\`\`\`
+1. Assert UserType.BUSINESS
+2. Validate subject_id exists
+3. INSERT into workflow
+4. For each stage:
+   a. INSERT workflow_stage (enforce stage_order uniqueness)
+   b. For each approver role: INSERT workflow_approver
+   c. If is_data_collection: INSERT workflow_data_collection entries
+5. sync_workflow_stage_is_request_flags()
+6. Commit → return 201
+\`\`\`
+
+---
+
+## Data Collection Configuration
+
+Assign fields to a stage, specifying who fills them:
+
+\`\`\`
+POST /v1/workflow/stages/data-collection
+  ?workflow_id={id}&stage_id={id}
+\`\`\`
+
+Each field entry includes:
+- \`subject_field_id\` or \`cred_field_id\` — the field being collected
+- \`actor\` — \`issuer\` / \`contributor\` / \`holder\`
+- \`is_required\` — whether mandatory
+- \`display_order\` — rendering order in the form
+
+The \`GetDataCollectionConfigService\` builds a structured tree for the UI:
+\`\`\`
+Subject
+└── Workflow
+    └── Stages (ordered)
+        └── Field groups / Sections
+            └── Fields
+                ├── actor
+                ├── is_required
+                └── display_order
+\`\`\`
+`};
+
+PAGES["workflow-flows"] = {title:"Workflow End-to-End Flows", badge:"Workflow", body:`
+Three complete execution flows covering both paradigms.
+
+---
+
+## Flow A — Holder-Initiated Approval
+
+![Flow A — Holder-initiated approval|wide](assets/holder-initialted-approval.png)
+
+---
+
+## Flow B — Issuer-Driven Workflow Request
+
+![Flow B — Issuer-driven workflow request|wide](assets/Issuer-driven-workflow-request.png)
+
+---
+
+## Flow C — Contributor Submission (Async)
+
+![Flow C — Contributor submission (async)|wide](assets/contributor-submission.png)
+
+> **Why deferred?** The HTTP transaction must commit before the Celery task or external connector tries to read the same rows — preventing database deadlocks.
+
+---
+
+## Status Transitions Reference
+
+![Status transitions reference|wide](assets/status-transition-reference.png)
+`};
+
+PAGES["workflow-api"] = {title:"Workflow API Reference", badge:"Workflow", body:`
+Complete endpoint reference for both workflow routers.
+
+## Workflow Definitions (\`/v1/workflow\`)
+
+### CRUD
+| Method | Path | Permission | Description |
+|---|---|---|---|
+| POST | \`/\` | workflow_create | Create workflow with stages |
+| GET | \`/\` | workflow_read | List workflows (paginated, searchable) |
+| GET | \`/{workflow_id}\` | workflow_read | Full workflow detail with stages |
+| PATCH | \`/{workflow_id}\` | workflow_update | Update workflow |
+| PATCH | \`/{workflow_id}/details\` | workflow_update | Update metadata only |
+
+### Stage Management
+| Method | Path | Permission | Description |
+|---|---|---|---|
+| POST | \`/{workflow_id}/stages\` | workflow_update | Add a stage |
+| PATCH | \`/{workflow_id}/stages/{stage_id}\` | workflow_update | Update stage |
+| DELETE | \`/{workflow_id}/stages/{stage_id}\` | workflow_update | Soft-delete stage |
+
+### Data Collection Config
+| Method | Path | Permission | Description |
+|---|---|---|---|
+| POST | \`/stages/data-collection\` | workflow_update | Create field config |
+| GET | \`/{workflow_id}/stages/{stage_id}/data-collection\` | workflow_read | Get config |
+| PATCH | \`/{workflow_id}/stages/{stage_id}/data-collection\` | workflow_update | Update config |
+| DELETE | \`/{workflow_id}/stages/{stage_id}/data-collection\` | workflow_update | Remove config |
+
+### Approval (Holder Issuer Request)
+| Method | Path | Permission | Description |
+|---|---|---|---|
+| POST | \`/requests/{issuer_request_id}/approve\` | workflow_read | Approve request |
+| POST | \`/requests/{issuer_request_id}/decline\` | workflow_read | Decline request |
+| GET | \`/requirements\` | workflow_read | List pending approvals |
+
+---
+
+## Workflow Requests (\`/v1/workflow-request\`)
+
+| Method | Path | Permission | Description |
+|---|---|---|---|
+| POST | \`/request\` | subject_list_read | Create requests |
+| GET | \`/requests\` | request_list_read | List with filters |
+| POST | \`/requests/send\` | request_list_read | Send (triggers emails) |
+| POST | \`/requests/send/first-stage\` | request_list_read | Send first stage only |
+| GET | \`/submissions\` | request_list_read | Submissions for review |
+| GET | \`/pending-review-request\` | request_list_read | Pending review count |
+| GET | \`/requests/{id}/activity\` | request_list_read | Activity log |
+| PUT | \`/requests/{id}\` | request_list_read | Edit request |
+| POST | \`/requests/{id}/stages/{stage_id}/submit\` | request_list_read | Submit stage data |
+| POST | \`/requests/{id}/stages/{stage_id}/approve\` | request_list_read | Approve stage |
+| POST | \`/requests/{id}/stages/{stage_id}/decline\` | request_list_read | Decline stage |
+| POST | \`/requests/move-to-draft\` | request_list_read | Manually move to draft |
+| DELETE | \`/requests\` | request_delete | Delete requests |
+`};
+
+PAGES["api-openapi"] = {title:"OpenAPI documentation (live)", badge:"API", body:`
+The interactive OpenAPI reference is hosted separately for each deployment.
+
+**[Open API documentation →]({{API_DOCS}})**
+
+Canonical URL: \`{{API_DOCS}}\`
+
+> Examples and links use the **{{ENV_LABEL}}** API host (\`{{API_BASE}}\`). Switch environment from the selector in the top bar.
+`};
+
+PAGES["api-auth"] = {title:"Authentication API", badge:"API", body:`
+**Base path:** \`/v1/auth\`
+
+Handles user registration, login, JWT token management, 2FA, KYC, and profile operations.
+
+## Public Endpoints (no token required)
+
+| Method | Path | Description |
+|---|---|---|
+| POST | \`/signup\` | Register new user account |
+| POST | \`/login\` | Authenticate and receive JWT |
+| POST | \`/refresh\` | Refresh token via HTTP-only cookie |
+| POST | \`/refresh-token\` | Refresh token via request body |
+| POST | \`/user/forget/password\` | Initiate password reset |
+| POST | \`/user/forget/password/verify/{token}\` | Complete password reset |
+| POST | \`/user/email/verify\` | Verify email address |
+
+## Protected Endpoints
+
+| Method | Path | Description |
+|---|---|---|
+| POST | \`/logout\` | Revoke tokens and end session |
+| GET | \`/user\` | Get own profile |
+| PUT | \`/user/profile\` | Update profile |
+| GET | \`/user/list\` | List all users |
+| GET | \`/role-permissions\` | Get own role and permissions |
+| POST | \`/user/change/password\` | Change password |
+| PUT | \`/2fa\` | Enable/disable 2FA |
+| PUT | \`/2fa/type\` | Set 2FA method (\`MOBILE_OTP\` or \`EMAIL_OTP\`) |
+| GET | \`/user/audit-logs\` | Retrieve audit log |
+
+## Login Request / Response
+
+\`\`\`json
+// POST /v1/auth/login
+{
+  "email": "user@example.com",
+  "password": "SecurePass123!",
+  "recaptcha_token": "03AGdBq2..."
+}
+\`\`\`
+
+\`\`\`json
+// 200 OK
+{
+  "status": 200,
+  "data": {
+    "access_token": "eyJhbGci...",
+    "token_type": "bearer",
+    "user": {
+      "uuid": "550e8400-...",
+      "name": "Jane Doe",
+      "role_type": "ISSUER",
+      "is_2fa_enabled": false
+    },
+    "requires_2fa": false
+  }
+}
+\`\`\`
+
+If \`requires_2fa: true\` → complete OTP verification before accessing protected endpoints.
+
+## Token Details
+- **Access token:** 1 hour TTL · HS256 algorithm
+- **Refresh token:** 24 day TTL · HTTP-only cookie
+- **Usage:** \`Authorization: Bearer {access_token}\`
+
+## Password Requirements
+8–20 characters, must include uppercase, lowercase, digit, and special character.
+
+## reCAPTCHA
+All public endpoints require a Google reCAPTCHA token to prevent automated attacks.
+`};
+
+PAGES["api-issuer"] = {title:"Issuer API", badge:"API", body:`
+**Base path:** \`/v1/issuer\`
+
+Manage issuer profiles — organisations that issue digital credentials.
+
+## Endpoints
+
+| Method | Path | Permission | Description |
+|---|---|---|---|
+| POST | \`/\` | issuer_create | Create issuer profile |
+| GET | \`/\` | issuer_list_read | List all issuers |
+| GET | \`/{issuer_id}\` | issuer_read | Get single issuer |
+| PUT | \`/{issuer_id}\` | issuer_update | Update issuer |
+| DELETE | \`/{issuer_id}\` | issuer_delete | Delete issuer |
+| POST | \`/revoke/{issuer_id}\` | credentials_revoke | Revoke credentials (async) |
+
+## Create Issuer
+
+\`\`\`bash
+POST /v1/issuer
+  ?mode=PRODUCTION
+  &credential_type=VERIFIABLE_CREDENTIAL
+  &wallet_holder_type=INDIVIDUAL
+\`\`\`
+
+Required fields: \`name\`, \`email\`, \`logo\` (base64-encoded PNG/JPG, max 2 MB).
+
+The \`did\` field is **auto-generated and immutable** — it cannot be changed after creation.
+
+## Revoke Credentials
+
+\`\`\`json
+// POST /v1/issuer/revoke/{issuer_id}
+{
+  "credential_ids": [1, 2, 3],
+  "remarks": "Credential compromised due to security incident"
+}
+// Response: 202 Accepted
+{ "data": { "task_id": "5f8c7d3b-..." } }
+\`\`\`
+
+⚠️ Revocation is **permanent and irreversible**.
+
+## Issuer Profile Fields
+
+| Field | Description |
+|---|---|
+| \`did\` | Auto-generated Decentralized Identifier (immutable) |
+| \`mode\` | \`STAGING\` or \`PRODUCTION\` |
+| \`credential_type\` | \`VERIFIABLE_CREDENTIAL\` or \`OPEN_BADGE_V3\` |
+| \`wallet_holder_type\` | \`INDIVIDUAL\`, \`ORGANIZATION\`, or \`SELF\` |
+| \`logo\` / \`banner_image\` | Base64 input → stored as S3 public URL |
+`};
+
+PAGES["api-subject"] = {title:"Subject Templates API", badge:"API", body:`
+**Base path:** \`/v1/subject\`
+
+Define the data schema for credentials — which fields they contain, their types, and validation rules.
+
+## Endpoints
+
+| Method | Path | Permission | Description |
+|---|---|---|---|
+| POST | \`/\` | subject_create | Create template |
+| GET | \`/\` | subject_list_read | List templates |
+| GET | \`/{subject_id}\` | subject_read | Get single template |
+| PUT | \`/{subject_id}\` | subject_update | Update template |
+| DELETE | \`/{subject_id}\` | subject_delete | Delete template |
+| GET | \`/template/{subject_id}\` | — | Download XLSX bulk-upload template |
+
+## Field Types
+
+\`TEXT\` · \`EMAIL\` · \`NUMBER\` · \`DATE\` · \`SELECT\` · \`MULTISELECT\` · \`FILE\` · \`IMAGE\` · \`TEXTAREA\`
+
+## Create Template
+
+\`\`\`json
+// POST /v1/subject?issuer_id=1
+{
+  "subject_name": "Certificate of Completion",
+  "fields": [
+    {
+      "field_name": "participant_name",
+      "field_label": "Full Name",
+      "field_type": "TEXT",
+      "is_required": true,
+      "is_searchable": true,
+      "min_length": 2,
+      "max_length": 100
+    },
+    {
+      "field_name": "course",
+      "field_label": "Course",
+      "field_type": "SELECT",
+      "is_required": true,
+      "options": ["Python", "JavaScript", "Go"]
+    },
+    {
+      "field_name": "score",
+      "field_label": "Final Score",
+      "field_type": "NUMBER",
+      "min_value": 0,
+      "max_value": 100
+    }
+  ]
+}
+\`\`\`
+
+## XLSX Template Download
+
+\`GET /v1/subject/template/{subject_id}\` returns a pre-formatted Excel file with column headers matching the template's \`field_name\` values, required-field markers (\`*\`), an example row, and dropdown validation for SELECT/MULTISELECT fields.
+`};
+
+PAGES["api-records"] = {title:"Records API", badge:"API", body:`
+**Base path:** \`/v1/records\`
+
+Create, validate, and manage credential data records before issuance.
+
+## Endpoints
+
+| Method | Path | Permission | Description |
+|---|---|---|---|
+| POST | \`/\` | records_create | Create single record |
+| GET | \`/\` | records_read | List records with filters |
+| GET | \`/{record_id}\` | records_read | Get single record |
+| PUT | \`/{record_id}\` | records_update | Update record |
+| DELETE | \`/{record_id}\` | records_delete | Delete record |
+| POST | \`/bulk_insert\` | records_create | Bulk upload CSV/Excel |
+| POST | \`/validate_records\` | records_update | Validate → move to DRAFT |
+| POST | \`/upload_images\` | records_create | Upload images from ZIP |
+| POST | \`/decrypt\` | records_read | Decrypt an encrypted field |
+| POST | \`/move-to-draft/{record_id}\` | records_update | Manually move to DRAFT |
+
+## Create Record
+
+\`\`\`json
+// POST /v1/records?subject_id=1&issuer_id=1
+{
+  "record_data": {
+    "participant_name": "Alice Johnson",
+    "email": "alice@example.com",
+    "course": "Python",
+    "completion_date": "2026-05-13"
+  },
+  "reference_id": "REC_2026_001",
+  "batch": "May2026"
+}
+\`\`\`
+
+Records start in \`IN_PROCESS\` status.
+
+## Validate Records
+
+\`\`\`json
+// POST /v1/records/validate_records?subject_id=1&issuer_id=1
+{ "record_ids": [100, 101, 102] }
+
+// Response
+{
+  "data": {
+    "total_validated": 3,
+    "valid_count": 2,
+    "invalid_count": 1,
+    "validation_errors": { "102": ["Score must be between 0 and 100"] }
+  }
+}
+\`\`\`
+
+## Status Filters
+
+| Value | Records returned |
+|---|---|
+| \`ALL\` | All non-issued records |
+| \`DRAFT\` | Ready for issuance |
+| \`IN_PROCESS\` | Awaiting validation |
+| \`IN_QUEUE\` | Issuance in progress |
+`};
+
+PAGES["api-credentials"] = {title:"Credentials API", badge:"API", body:`
+**Base path:** \`/v1/credentials\`
+
+Issue, schedule, share, and list verifiable credentials.
+
+## Endpoints
+
+| Method | Path | Permission | Description |
+|---|---|---|---|
+| POST | \`/user/credentials/issue\` | credentials_issue | Issue credentials (async) |
+| POST | \`/user/credentials/schedule\` | — | Schedule future issuance |
+| PUT | \`/user/credentials/schedule/{id}\` | — | Update scheduled issuance |
+| GET | \`/credentials\` | — | List credentials with filters |
+| GET | \`/credential/download-pdf/{uuid}\` | — | Get PDF download URL |
+| POST | \`/credentials/share\` | credentials_share | Share credentials (async) |
+
+## Issue Credentials
+
+\`\`\`bash
+POST /v1/credentials/user/credentials/issue
+  ?email_to_holder=true
+  &valid_from=2026-05-01T00:00:00Z
+  &valid_until=2026-12-31T23:59:59Z
+\`\`\`
+
+\`\`\`json
+{
+  "records": [100, 101, 102],
+  "batch": "Spring 2026",
+  "remarks": "Spring semester graduates"
+}
+// Response: 202 Accepted
+{ "data": { "task_id": "5f8c7d3b-..." } }
+\`\`\`
+
+## Credential Object Fields
+
+| Field | Description |
+|---|---|
+| \`uuid\` | Used in verification URLs and QR codes |
+| \`status\` | \`ISSUED\`, \`REVOKED\`, or \`EXPIRED\` |
+| \`blockchain_hash\` | On-chain anchor transaction hash |
+| \`pdf_url\` | S3 URL to the PDF certificate |
+| \`valid_from\` / \`valid_until\` | Validity period (ISO 8601 UTC) |
+
+## List Filters
+
+\`credential_status\`: \`ACTIVE\` · \`REVOKED\` · \`EXPIRED\`
+
+\`sort_by\`: \`ISSUED_DATE_ASC\` · \`ISSUED_DATE_DESC\` · \`HOLDER_NAME_ASC\` · \`HOLDER_NAME_DESC\` · \`STATUS_ASC\` · \`BATCH_NAME_ASC\`
+`};
+
+PAGES["api-holder"] = {title:"Holder API", badge:"API", body:`
+**Base path:** \`/v1/holder\`
+
+Manage holder accounts — individuals or organisations that receive credentials.
+
+## Endpoints
+
+| Method | Path | Description |
+|---|---|---|
+| POST | \`/\` | Create holder account |
+| GET | \`/\` | List holders (paginated, searchable) |
+| GET | \`/{holder_id}\` | Get single holder |
+| PUT | \`/{holder_id}\` | Update holder |
+| DELETE | \`/\` | Delete holders (bulk via query params) |
+
+## Create Holder
+
+\`\`\`json
+// POST /v1/holder
+{
+  "name": "John Smith",
+  "email": "john.smith@example.com",
+  "phone": "+1-555-0123",
+  "city": "Springfield",
+  "country": "USA",
+  "wallet_address": "0x742d35Cc...",
+  "reference_id": "EMP_12345"
+}
+\`\`\`
+
+\`email\` is unique per holder. \`wallet_address\` is optional and supports blockchain wallet delivery.
+
+## Bulk Delete
+
+\`\`\`
+DELETE /v1/holder?holder_ids=100&holder_ids=101&holder_ids=102
+\`\`\`
+
+Holders with active credentials are soft-deleted. A \`deleted_count\` and \`failed_count\` are returned.
+`};
+
+PAGES["api-verifier"] = {title:"Verifier API", badge:"API", body:`
+**Base path:** \`/v1/verifier\`
+
+All endpoints are **publicly accessible** — no authentication required.
+
+## Endpoints
+
+| Method | Path | Description |
+|---|---|---|
+| GET | \`/user/credential/validate/{uuid}\` | Validate credential by UUID |
+| GET | \`/user/credential/{uuid}\` | View full credential details |
+| POST | \`/user/credential/upload/json\` | Batch verify via JSON upload |
+
+## Validate Response
+
+\`\`\`json
+// Valid credential
+{
+  "data": {
+    "is_valid": true,
+    "status": "ISSUED",
+    "issuer_name": "ABC University",
+    "blockchain_hash": "0x1a2b3c...",
+    "verification_result": {
+      "signature_valid": true,
+      "issuer_valid": true,
+      "subject_valid": true,
+      "not_revoked": true,
+      "not_expired": true,
+      "blockchain_verified": true
+    }
+  }
+}
+\`\`\`
+
+\`\`\`json
+// Revoked credential
+{
+  "data": {
+    "is_valid": false,
+    "status": "REVOKED",
+    "revoked_at": "2026-05-10T15:30:00Z",
+    "verification_result": { "not_revoked": false }
+  }
+}
+\`\`\`
+`};
+
+PAGES["api-rbac"] = {title:"RBAC API", badge:"API", body:`
+**Base path:** \`/v1/rbac\`
+
+Manage permissions and view role-permission mappings.
+
+## Endpoints
+
+| Method | Path | Role | Description |
+|---|---|---|---|
+| POST | \`/create/permission\` | Any | Create permissions in bulk |
+| GET | \`/permissions/list\` | Any | List all system permissions |
+| GET | \`/role/permissions/list\` | Any | List role-permission mappings |
+| GET | \`/authority-access\` | AUTHORITY | Authority dashboard |
+
+## Create Permissions
+
+\`\`\`json
+// POST /v1/rbac/create/permission
+{
+  "permissions": [
+    {
+      "name": "Issue Credentials",
+      "slug": "credentials_issue",
+      "resource": "credentials",
+      "action": "issue"
+    }
+  ]
+}
+// Duplicate slugs are automatically skipped
+\`\`\`
+
+## Authority Dashboard Response
+
+\`\`\`json
+{
+  "summary": {
+    "total_permissions": 50,
+    "granted_permissions": 45,
+    "percentage_granted": 90
+  },
+  "modules": {
+    "credentials": {
+      "permissions": [
+        { "slug": "credentials_issue", "granted": true },
+        { "slug": "credentials_share", "granted": false }
+      ]
+    }
+  }
+}
+\`\`\`
+`};
+
+PAGES["guide-first-credential"] = {title:"Issue Your First Credential", badge:"Guide", body:`
+A complete walkthrough from account creation to a verified credential.
+
+## Prerequisites
+- EveryCRED account with ISSUER role
+- Valid access token (see Authentication API)
+
+---
+
+## Step 1 — Create an Issuer Profile
+
+\`\`\`bash
+curl -X POST "{{API_BASE}}/v1/issuer
+  ?mode=PRODUCTION
+  &credential_type=VERIFIABLE_CREDENTIAL
+  &wallet_holder_type=INDIVIDUAL" \\
+  -H "Authorization: Bearer {TOKEN}" \\
+  -d '{
+    "name": "Acme Training Institute",
+    "email": "admin@acme.edu",
+    "logo": "<base64_png>",
+    "about": "Professional training certifications."
+  }'
+\`\`\`
+
+Save the returned \`id\` as **ISSUER_ID**. The \`did\` is auto-generated and immutable.
+
+---
+
+## Step 2 — Define a Subject Template
+
+\`\`\`bash
+curl -X POST "{{API_BASE}}/v1/subject?issuer_id=$ISSUER_ID" \\
+  -H "Authorization: Bearer {TOKEN}" \\
+  -d '{
+    "subject_name": "Training Certificate",
+    "fields": [
+      { "field_name": "name",            "field_type": "TEXT",  "is_required": true },
+      { "field_name": "email",           "field_type": "EMAIL", "is_required": true },
+      { "field_name": "course",          "field_type": "TEXT",  "is_required": true },
+      { "field_name": "completion_date", "field_type": "DATE",  "is_required": true }
+    ]
+  }'
+\`\`\`
+
+Save the returned \`id\` as **SUBJECT_ID**.
+
+---
+
+## Step 3 — Create a Record
+
+\`\`\`bash
+curl -X POST "{{API_BASE}}/v1/records
+  ?subject_id=$SUBJECT_ID&issuer_id=$ISSUER_ID" \\
+  -H "Authorization: Bearer {TOKEN}" \\
+  -d '{
+    "record_data": {
+      "name": "Alice Johnson",
+      "email": "alice@example.com",
+      "course": "Project Management",
+      "completion_date": "2026-05-13"
+    }
+  }'
+\`\`\`
+
+Record starts in \`IN_PROCESS\` status. Save the returned \`id\` as **RECORD_ID**.
+
+---
+
+## Step 4 — Validate the Record
+
+\`\`\`bash
+curl -X POST "{{API_BASE}}/v1/records/validate_records
+  ?subject_id=$SUBJECT_ID&issuer_id=$ISSUER_ID" \\
+  -H "Authorization: Bearer {TOKEN}" \\
+  -d '{"record_ids": [$RECORD_ID]}'
+\`\`\`
+
+Passing records move to \`DRAFT\` status.
+
+---
+
+## Step 5 — Issue the Credential
+
+\`\`\`bash
+curl -X POST "{{API_BASE}}/v1/credentials/user/credentials/issue
+  ?email_to_holder=true
+  &valid_from=2026-05-13T00:00:00Z
+  &valid_until=2027-05-12T23:59:59Z" \\
+  -H "Authorization: Bearer {TOKEN}" \\
+  -d '{"records": [$RECORD_ID], "batch": "May 2026"}'
+\`\`\`
+
+Returns \`202 Accepted\`. Alice receives an email once the async task completes.
+
+---
+
+## Step 6 — Verify (Public — no token needed)
+
+\`\`\`bash
+curl "{{API_BASE}}/v1/verifier/user/credential/validate/{credential_uuid}"
+\`\`\`
+`};
+
+PAGES["guide-bulk"] = {title:"Bulk Issuance via CSV", badge:"Guide", body:`
+Issue credentials to hundreds of recipients in a single operation.
+
+## Step 1 — Download the Template
+
+\`\`\`bash
+GET /v1/subject/template/{subject_id}
+Authorization: Bearer {TOKEN}
+\`\`\`
+
+Returns a pre-formatted \`.xlsx\` with headers, required-field markers, and dropdown validation.
+
+## Step 2 — Fill the CSV
+
+Column headers must **exactly match** the subject template \`field_name\` values.
+
+\`\`\`csv
+name,email,course,completion_date,score
+John Smith,john@example.com,Advanced Python,2026-05-10,95
+Jane Doe,jane@example.com,Machine Learning,2026-05-12,88
+\`\`\`
+
+## Step 3 — Upload
+
+\`\`\`bash
+curl -X POST "{{API_BASE}}/v1/records/bulk_insert
+  ?subject_id=1&issuer_id=1" \\
+  -H "Authorization: Bearer {TOKEN}" \\
+  -F "file=@students.csv"
+\`\`\`
+
+\`\`\`json
+{
+  "data": {
+    "total_records": 100,
+    "successful_records": 98,
+    "failed_records": 2,
+    "errors": [
+      { "row_number": 23, "error": "Email field is required" }
+    ]
+  }
+}
+\`\`\`
+
+Fix failed rows and re-upload only those. Successfully uploaded records are already saved.
+
+## Step 4 — Validate All
+
+\`\`\`bash
+GET /v1/records?issuer_id=1&status_filter=IN_PROCESS&limit=100
+POST /v1/records/validate_records
+  { "record_ids": [101, 102, 103, ...] }
+\`\`\`
+
+## Step 5 — Issue in Batch
+
+\`\`\`bash
+POST /v1/credentials/user/credentials/issue
+  ?email_to_holder=true&valid_from=2026-05-01T00:00:00Z
+
+{ "records": [101, 102, 103, ...], "batch": "May 2026 Cohort" }
+\`\`\`
+
+Returns \`202 Accepted\`. All holders receive email on completion.
+
+> **Tip:** Keep batches under 500 records per issuance call for optimal performance.
+`};
+
+PAGES["guide-verify"] = {title:"Verify a Credential", badge:"Guide", body:`
+Credential verification is fully public — no API key or login required. Any employer, institution, or service can verify.
+
+## Option 1 — By UUID
+
+Every credential has a unique UUID. Share it with verifiers or embed it in a QR code.
+
+\`\`\`bash
+curl "{{API_BASE}}/v1/verifier/user/credential/validate/{uuid}"
+\`\`\`
+
+All six verification checks are performed and returned in the response.
+
+## Option 2 — Full Credential View
+
+\`\`\`bash
+curl "{{API_BASE}}/v1/verifier/user/credential/{uuid}"
+\`\`\`
+
+Returns the complete credential including issuer info, holder info, and all claims.
+
+## Option 3 — Batch via JSON Upload
+
+\`\`\`bash
+curl -X POST "{{API_BASE}}/v1/verifier/user/credential/upload/json" \\
+  -H "Content-Type: application/json" \\
+  -d @credentials.json
+\`\`\`
+
+## QR Code Verification
+
+Every PDF certificate includes a QR code linking directly to the verification URL. Scanning it takes the verifier to a live validation result — no app needed.
+
+## Independent Blockchain Verification
+
+The \`blockchain_hash\` in every response can be independently looked up on any public blockchain explorer to confirm the credential was anchored — **without trusting or contacting EveryCRED**.
+`};
+
+PAGES["guide-workflow"] = {title:"Set Up a Workflow", badge:"Guide", body:`
+Create a two-stage workflow: a contributor submits data, then a manager approves before the credential record is created.
+
+## Prerequisites
+- BUSINESS user type
+- Subject template and issuer profile already created
+
+## Step 1 — Create the Workflow
+
+\`\`\`bash
+POST /v1/workflow/?subject_id={subject_id}
+Authorization: Bearer {TOKEN}
+\`\`\`
+
+\`\`\`json
+{
+  "workflow_name": "Training Completion Approval",
+  "is_paraller": false,
+  "stages": [
+    {
+      "stage_name": "Score Submission",
+      "stage_order": 1,
+      "approval_requirement": 1,
+      "is_data_collection": true
+    },
+    {
+      "stage_name": "Manager Approval",
+      "stage_order": 2,
+      "approval_requirement": 1,
+      "approver_role_ids": ["{manager_role_uuid}"]
+    }
+  ]
+}
+\`\`\`
+
+## Step 2 — Configure Data Collection for Stage 1
+
+\`\`\`json
+// POST /v1/workflow/stages/data-collection
+//   ?workflow_id={id}&stage_id={stage_1_id}
+{
+  "fields": [
+    {
+      "subject_field_id": "{score_field_id}",
+      "actor": "contributor",
+      "is_required": true,
+      "display_order": 1
+    }
+  ]
+}
+\`\`\`
+
+## Step 3 — Create a Workflow Request
+
+\`\`\`json
+// POST /v1/workflow-request/request
+//   ?subject_id={id}&issuer_id={id}
+[{ "record_data": { "name": "Alice Johnson", "email": "alice@example.com" } }]
+\`\`\`
+
+## Step 4 — Send
+
+\`\`\`bash
+POST /v1/workflow-request/requests/send?request_ids={id}
+\`\`\`
+
+Emails are dispatched to the contributor (Stage 1) and manager (Stage 2). Once both complete their steps, a DRAFT record is automatically created and ready for issuance.
+`};
+
+PAGES["guide-encryption"] = {title:"Field-Level Encryption", badge:"Guide", body:`
+Protect sensitive credential fields at rest with AES encryption.
+
+## Enable Encryption
+
+\`\`\`bash
+# .env
+ENABLE_ENCRYPTION=true
+\`\`\`
+
+When enabled, the \`EncryptionResponseMiddleware\` masks encrypted fields in all API responses.
+
+## Mark Fields as Encrypted
+
+In the Subject Template, set \`is_encrypted: true\` on sensitive fields:
+
+\`\`\`json
+{
+  "field_name": "patient_id",
+  "field_label": "Patient ID",
+  "field_type": "TEXT",
+  "is_required": true,
+  "is_encrypted": true
+}
+\`\`\`
+
+## Behaviour
+
+- Encrypted fields are **not returned** in standard read responses
+- Values are stored as AES ciphertext in the database
+- Decryption requires an explicit API call (logged to audit trail)
+
+## Decrypt a Field Value
+
+\`\`\`bash
+POST /v1/records/decrypt
+Authorization: Bearer {TOKEN}
+
+{
+  "encrypted_value": "<ciphertext_from_record_data>",
+  "field_name": "patient_id"
+}
+\`\`\`
+
+\`\`\`json
+{ "data": { "decrypted_value": "PAT-12345", "field_name": "patient_id" } }
+\`\`\`
+
+## Supported Models
+
+| Model | Encrypted Scope |
+|---|---|
+| Records | All \`record_data\` fields marked \`is_encrypted\` |
+| Credentials | \`credential_data\` |
+| Holders | PII fields |
+| Issuers | Selected configuration fields |
+| AadhaarData | All fields |
+| HolderSubmission | Submission data |
+
+> **Important:** Do not disable \`ENABLE_ENCRYPTION\` after data has been written — encrypted fields will become unreadable. Plan your encryption strategy before creating production data.
+`};
+
+PAGES["roadmap-overview"] = {title:"2026 Roadmap Overview", badge:"Roadmap", body:`
+A complete view of EveryCRED's 2026 product roadmap across all modules, regions, and delivery quarters.
+
+## At a Glance
+
+| Metric | Value |
+|---|---|
+| Total features tracked | 187 |
+| Completed globally | 82 (44%) |
+| In progress | 15 |
+| Planned for 2026 | 63 features |
+| Estimated effort | 10,560 hours |
+| Team size | 6 engineers |
+| Regions | India · EU · US · Africa |
+
+## Quarterly Summary
+
+| Quarter | Features | Critical | High | Medium | Hours |
+|---|---|---|---|---|---|
+| Q1 Jan–Mar | 27 | 10 | 12 | 5 | 2,880 |
+| Q2 Apr–Jun | 18 | 3 | 9 | 6 | 2,880 |
+| Q3 Jul–Sep | 11 | 0 | 6 | 5 | 2,400 |
+| Q4 Oct–Dec | 7 | 1 | 4 | 2 | 2,400 |
+| **Total** | **63** | **14** | **31** | **18** | **10,560** |
+
+## Engineering Allocation
+
+| Module | Effort | Hours/Month | Owner |
+|---|---|---|---|
+| SDK + Core | 30% | 288 hrs | Manil Jayswal |
+| Wallet App | 30% | 336 hrs | Vraj Patel |
+| Compliances | 20% | 144 hrs | Gourav Patidar |
+| DCS | 10% | 96 hrs | Om Gosai / Brayan |
+| DID | 5% | 48 hrs | Manil Jayswal |
+| Others (POCs) | 5% | 48 hrs | — |
+
+## Three Strategic Bets
+
+**Wallet App (Q1–Q2)** — The missing end-user layer. 30% of capacity, 22 features. No end-to-end adoption scenario works without it.
+
+**Certifications (Q2)** — GDPR, SOC2, ISO27001 are all Critical priority. They gate enterprise sales in US and EU markets.
+
+**Standards Expansion (Q3–Q4)** — ISO mDoc, BBS+, DIDComm 2.0, eIDAS 2.0. Required for global wallet interoperability and EU legal market entry.
+`};
+
+PAGES["roadmap-q1"] = {title:"Q1 2026 Roadmap", badge:"Roadmap", body:`
+**Theme: Wallet Foundation + Standards Baseline + GDPR Controls**
+
+27 features · 10 Critical · 12 High · 5 Medium · 2,880 hours
+
+## Critical Priority
+
+| Module | Feature |
+|---|---|
+| Wallet App | Secure Login (PIN/Biometrics) |
+| Wallet App | DID Creation & Management |
+| Wallet App | End-to-End Encryption |
+| Wallet App | W3C VC + VP Support |
+| Wallet App | Secure Key Storage (Device/Enclave) |
+| SDK | Selective Disclosure Package |
+| SDK | Verifiable Credentials Package |
+| Core VC | W3C Verifiable Presentation (VP) |
+| DCS | Risk Monitoring & Analytics (with AI) |
+
+## High Priority
+
+| Module | Feature | Region |
+|---|---|---|
+| Wallet App | Account Recovery (Backup/Seed) | All |
+| Wallet App | Claim Credentials (QR/Link/OpenID4VC) | All |
+| Core VC | OpenID4VCI | All |
+| Core VC | OpenID4VP | All |
+| DCS | NFC DigiLocker Support | India |
+| DCS | DigiLocker VC/VP Capabilities | India |
+| MOSIP | Inji Setup & Integration | All |
+| Use Cases | Bank Usecase Demo Platform | All |
+| Compliances | Data Minimization (GDPR) | All |
+| Compliances | Consent Management | All |
+| DCS | Tenant Database Management | All |
+
+## Medium Priority
+
+DCS: Subject Library · Email Settings
+Wallet App: Credential Preview · Expiry Notifications · Auto Lock
+Contributor: Hindi Language Support (India) · Marathi Language Support (India)
+Compliances: Cookies & Trackers Policy
+`};
+
+PAGES["roadmap-q2q4"] = {title:"Q2–Q4 2026 Roadmap", badge:"Roadmap", body:`
+## Q2 2026 — Certifications & Developer Ecosystem
+18 features · 3 Critical · 2,880 hours
+
+### Critical
+| Module | Feature |
+|---|---|
+| Compliances | **GDPR Certification** |
+| Compliances | **SOC2 Type II Certification** |
+| Compliances | **ISO27001 Certification** |
+
+### High Priority
+- **SDK:** Sandbox Platform · API Key Management
+- **DCS:** Billing & Pricing (SaaS only) · Payment Gateway (SaaS only)
+- **Wallet App:** Verification Requests · Approve/Reject · Aadhaar eKYC (India) · DIDComm/Cross-Wallet
+- **MOSIP:** Data Registry · eSignet Integration
+
+### Medium Priority
+- **DCS:** Individual Credentials Analytics · Reports Module
+- **Wallet App:** Multi-language Support · White-label Branding
+- **Use Cases:** Hotel Usecase Demo Platform
+
+---
+
+## Q3 2026 — Standards Expansion
+11 features · 0 Critical · 2,400 hours
+
+- **Core VC:** ISO 18013-5 (mDoc) · ISO mDoc Format · BBS+ (ZKP) · DIDComm 2.0 · did:Key · did:web · Issuer Profile Revocation · CBOR Format
+- **Verifier:** Token-Based Verification · Verifier Tenant Management
+- **Use Cases:** Laracopilot UseCase Builder
+
+---
+
+## Q4 2026 — EU Compliance & Design Tools
+7 features · 1 Critical · 2,400 hours
+
+### Critical
+| Module | Feature | Region |
+|---|---|---|
+| Core VC | **eIDAS 2.0** | EU |
+
+### High Priority
+- **DCS:** Credential Template Builder · Landing Page Builder
+- **Core VC:** did:ebsi Method (EU)
+- **Use Cases:** Aadhaar APP Reusable ID (India)
+
+### Medium Priority
+- **DCS:** Hindi Language · Marathi Language (India)
+- **Core VC:** StatusList2021
+- **DID:** DID Lifecycle Management
+`};
+
+PAGES["roadmap-modules"] = {title:"Module Completion Status", badge:"Roadmap", body:`
+## Completion by Module
+
+| Module | Total | ✅ Done | ⚠️ In Progress | 🔜 Planned | Completion |
+|---|---|---|---|---|---|
+| Holder Web | 5 | 5 | 0 | 0 | **100%** |
+| DCS | 61 | 45 | 1 | 12 | **74%** |
+| Contributor | 7 | 5 | 0 | 2 | **71%** |
+| DID | 3 | 2 | 1 | 0 | **67%** |
+| SDK | 11 | 7 | 0 | 4 | **64%** |
+| Verifier | 5 | 3 | 0 | 2 | **60%** |
+| Core VC Layer | 22 | 11 | 1 | 13 | **50%** |
+| Compliances | 11 | 5 | 1 | 5 | **45%** |
+| Use Cases | 4 | 1 | 1 | 2 | **25%** |
+| Wallet App | 22 | 3 | 4 | 15 | **14%** |
+| MOSIP | 3 | 0 | 0 | 3 | **0%** |
+
+## Regional Coverage
+
+| Region | Features | Completed | Completion |
+|---|---|---|---|
+| India | 187 | 82 | 44% |
+| EU | 165 | 68 | 41% |
+| US | 165 | 68 | 41% |
+| Africa | 165 | 68 | 41% |
+
+India leads with 22 additional features from India Stack integrations (DigiLocker, Aadhaar, SurePass).
+
+## Key Observations
+
+**Fully complete:** Holder Web at 100% — no new work needed.
+
+**Stable (70%+):** DCS (74%) and Contributor (71%) are largely done; remaining work is localisation and analytics.
+
+**Active investment (40–65%):** SDK, Verifier, and Core VC — significant Q1–Q3 2026 work. Compliances at 45% is the critical gate for enterprise sales.
+
+**Major build needed:** Wallet App at 14% is the largest construction effort. MOSIP at 0% starts Q1 2026.
+`};
+
+PAGES["glossary"] = {title:"Glossary", badge:null, body:`
+Key terms used throughout the EveryCRED documentation.
+
+| Term | Definition |
+|---|---|
+| **Claim** | A statement about a subject (e.g., name = "John Smith") |
+| **Credential** | A cryptographically signed set of claims issued by an Issuer to a Holder |
+| **DID** | Decentralized Identifier — a globally unique, blockchain-resolvable URI for an entity |
+| **DID Document** | JSON document returned when resolving a DID; contains public keys and service endpoints |
+| **DID Method** | Specification defining how a DID is created, resolved, and updated |
+| **Ed25519** | Elliptic-curve digital signature algorithm used to sign EveryCRED credentials |
+| **Holder** | Individual or organisation that receives and stores a credential |
+| **Issuer** | Organisation that creates and cryptographically signs credentials |
+| **JSON-LD** | JSON Linked Data — adds semantic context to JSON credentials via \`@context\` |
+| **mDoc** | ISO 18013-5 mobile document credential format for high-assurance use cases |
+| **MSO** | Mobile Security Object — the signed data structure inside an mDoc |
+| **OpenID4VCI** | OpenID for Verifiable Credential Issuance — protocol for wallets to claim credentials |
+| **OpenID4VP** | OpenID for Verifiable Presentations — protocol for holders to present credentials |
+| **RBAC** | Role-Based Access Control — restricts API access by permission slugs |
+| **Record** | Raw credential data in EveryCRED before it is signed and issued |
+| **Revocation** | Permanent invalidation of a previously issued credential |
+| **SD-JWT** | Selective Disclosure JWT — enables holders to reveal only chosen claims |
+| **Subject Template** | Schema defining which fields a credential will contain |
+| **Verifier** | Party that checks whether a credential is authentic and valid |
+| **W3C VC** | W3C Verifiable Credentials Data Model — international standard for digital credentials |
+| **Workflow** | Multi-stage data collection and approval process before credential issuance |
+| **eIDAS 2.0** | EU digital identity regulation required for EU market operations |
+| **record_slug** | Accumulated JSON field values merged across all workflow stages |
+| **task_id** | Identifier returned from async operations (202 Accepted) for status tracking |
+`};
+
+PAGES["standards"] = {title:"Standards & Compliance", badge:null, body:`
+EveryCRED's current and planned support for credential standards and compliance certifications.
+
+## Credential Standards
+
+| Standard | Status |
+|---|---|
+| W3C VC Data Model 2.0 | ✅ Live |
+| IETF SD-JWT | ✅ Live |
+| Open Badges v3.0 | ✅ Live |
+| OpenID4VCI | 🔜 Q1 2026 |
+| OpenID4VP | 🔜 Q1 2026 |
+| ISO 18013-5 (mDoc) | 🔜 Q3 2026 |
+| eIDAS 2.0 | 🔜 Q4 2026 (EU) |
+
+## Data Formats
+
+| Format | Status |
+|---|---|
+| JSON-LD | ✅ Live |
+| SD-JWT | ✅ Live |
+| CBOR | 🔜 Q3 2026 |
+| BBS+ (ZKP) | 🔜 Q3 2026 |
+
+## Revocation Methods
+
+| Method | Status |
+|---|---|
+| RevocationList2020 | ✅ Live |
+| StatusList2021 | 🔜 Q4 2026 |
+
+## DID Methods
+
+| Method | Status |
+|---|---|
+| did:evrc | ✅ Live |
+| did:jwk | ⚠️ Partial |
+| did:key | 🔜 Q3 2026 |
+| did:web | 🔜 Q3 2026 |
+| did:ebsi | 🔜 Q4 2026 (EU) |
+
+## Security Controls (Implemented)
+
+- DB encryption & data privacy
+- MFA (Mobile OTP, Email OTP)
+- RBAC with fine-grained permission slugs
+- Audit logging and monitoring
+- Secret key management (KMS)
+- JWT HS256 with 1-hour access token expiry
+- reCAPTCHA on all public endpoints
+- Field-level AES encryption at rest
+
+## Compliance Certifications
+
+| Certification | Status |
+|---|---|
+| Data Minimization (GDPR) | ⚠️ Q1 2026 |
+| Consent Management | 🔜 Q1 2026 |
+| GDPR Certification | 🔜 Q2 2026 |
+| SOC2 Type II | 🔜 Q2 2026 |
+| ISO 27001 | 🔜 Q2 2026 |
+| India DPDP Act | ⚠️ Q2 2026 |
+`};
+
+PAGES["changelog"] = {title:"Changelog", badge:null, body:`
+Release history for the EveryCRED platform.
+
+## v1.0.0 — May 2026
+
+### Added
+- Complete DCS issuer platform (74% feature completion)
+- W3C VC 2.0 and SD-JWT credential issuance
+- Blockchain anchoring via did:evrc on Polygon-compatible chain
+- RevocationList2020 support
+- Workflow Engine — both holder-initiated and issuer-driven paradigms
+- Contributor Module with deferred async processing (BackgroundTasks anti-deadlock pattern)
+- RBAC with fine-grained permission slugs on every endpoint
+- Bulk CSV/Excel record upload and batch issuance
+- PDF certificate generation (wkhtmltopdf + QR codes via PyMuPDF)
+- Public verifier API — no authentication required
+- DigiLocker integration (India)
+- Aadhaar OTP / eKYC (India)
+- White-label branding (logo, theme, email)
+- Field-level AES encryption at rest
+- Celery/Redis async task queue (credential issuance, revocation, notifications)
+- Audit logging for all sensitive operations
+
+### Infrastructure
+- AWS Cloud deployment across India, EU, US, Africa regions
+- FastAPI (async) + SQLAlchemy 2.x (MySQL/aiomysql)
+- Celery Beat for scheduled credential issuance
+
+---
+
+## Upcoming — Q1 2026
+
+- W3C Verifiable Presentation (VP) — in progress
+- OpenID4VCI and OpenID4VP
+- Wallet App: Secure Login, DID management, E2E encryption, key storage
+- SDK: Selective Disclosure Package, Verifiable Credentials Package
+- GDPR: Data Minimization, Consent Management
+- MOSIP Inji Integration
+- AI-powered Risk Monitoring & Analytics
+
+See the full Q1 2026 Roadmap for details.
+`};
+
+
+PAGES["platform-architecture"] = {title:"Platform Architecture", badge:"Core", body:`
+EveryCRED is composed of seven interconnected platform components that together form a complete digital credential ecosystem — from issuance and workflow automation to wallet, verification, and DID resolution.
+
+## System Architecture Overview
+
+The interactive map below shows actors, core services, identity layer, shared infrastructure, and end-to-end flows. Use the color legend in the toolbar to orient by component.
+
+{{ARCHITECTURE_DIAGRAM}}
+
+---
+
+## The Five Components
+
+---
+
+## Component 1 — DCS (Digital Credentialing Solution)
+
+The **issuer-facing management platform** with three embedded sub-applications:
+
+- **Issuer Dashboard** — Credential schema, record management, issuance, analytics, RBAC
+- **Contributor Application** — Tokenised data submission by external third parties
+- **Holder Web Application** — Browser-based credential portal for recipients
+
+DCS runs in both **SaaS** and **On-Premises** deployment modes.
+
+---
+
+## Component 2 — Wallet App (Mobile)
+
+A **standalone mobile wallet** (iOS + Android) for credential holders. Device-native, supports secure key storage, selective disclosure (SD-JWT), W3C VP, and OpenID4VCI/VP flows.
+
+Distinct from the Holder Web App — the Wallet App is holder-managed and works offline (planned).
+
+---
+
+## Component 3 — Service Layer
+
+The **shared backend infrastructure** powering all components:
+- REST API (FastAPI async) at \`/v1/*\`
+- Background tasks (Celery + Redis)
+- Blockchain anchoring engine
+- AWS S3 object storage
+- Email / SMS / push notification dispatch
+
+---
+
+## Component 4 — DID Methods & Resolver
+
+The **decentralized identity layer**:
+- Auto-generates a DID for every issuer at creation (immutable)
+- Hosts and resolves DID documents
+- Supports multiple DID methods (did:evrc live, did:key/did:web/did:ebsi planned)
+- W3C DID Core 1.0 compliance
+
+---
+
+## Component 5 — Verifier
+
+A **dual-mode verification service**:
+- **White-label Verifier** — Issuers embed branded verification under their own domain
+- **EveryCRED Verifier** — Public portal + REST API operated by EveryCRED
+
+All verification is public — no authentication required. Six-check cryptographic validation on every call.
+`};
+
+PAGES["saas-onprem"] = {title:"SaaS vs On-Premises", badge:"Core", body:`
+EveryCRED supports two deployment models. Understanding the differences is essential for planning your implementation.
+
+## Deployment Model Comparison
+
+| Dimension | SaaS | On-Premises |
+|---|---|---|
+| **Infrastructure owner** | EveryCRED (AWS) | Client (own data centre) |
+| **Setup required** | None — instant provisioning | Full infrastructure setup |
+| **Scalability** | Auto-scaling | Client-managed |
+| **Maintenance** | EveryCRED handles all updates | Client responsible |
+| **Data residency** | EveryCRED cloud regions | Client-controlled |
+| **Billing & Pricing module** | ✅ Available | ✖ Not available |
+| **Payment Gateway** | ✅ Available | ✖ Not available |
+| **S3 / Object Storage** | EveryCRED managed | Client must provision |
+| **KMS (Key Management)** | EveryCRED managed | Client must manage |
+| **Consent Management** | Centralised | Client must build |
+| **SurePass / Aadhaar KYC** | Pre-integrated | Client must configure |
+| **Multi-tenancy** | Platform-managed | Client-managed per deployment |
+
+---
+
+## Feature Availability by Deployment
+
+| Feature | SaaS | On-Prem |
+|---|---|---|
+| Core credential issuance | ✅ | ✅ |
+| Workflow Engine | ✅ | ✅ |
+| RBAC | ✅ | ✅ |
+| White-label branding | ✅ | ✅ |
+| DigiLocker (India) | ✅ | ✅ |
+| Aadhaar KYC (India) | ✅ | ✅ |
+| PDF certificate generation | ✅ | ✅ |
+| Blockchain anchoring | ✅ | ✅ |
+| Analytics & reporting | ✅ | ✅ |
+| Billing & Pricing | ✅ | ✖ |
+| Payment Gateway | ✅ | ✖ |
+| Zapier Integration | 🔜 Q3 | 🔜 Q3 |
+| eIDAS 2.0 (EU) | 🔜 Q4 | 🔜 Q4 |
+| AWS GovCloud (US) | 🔜 Q2 | — |
+
+---
+
+## Known Challenges
+
+### SaaS vs On-Prem Conflict
+Current production clients are predominantly SaaS-based, while the roadmap includes government-grade on-premises deployments. This creates parallel development burden for infrastructure-dependent features (S3, KMS, Consent Management).
+
+A **modular plugin architecture** is being built in Q1–Q2 2026 to allow these services to be swapped between EveryCRED-managed and client-managed implementations without forking the codebase.
+
+### On-Premises Infrastructure Diversity (India)
+Indian government deployments use diverse setups (NIC servers, local on-prem, private cloud). Each deployment requires per-environment configuration of connectors that are pre-integrated in the SaaS model.
+
+---
+
+## Decision Guide
+
+**Choose SaaS if:**
+- You want fast time-to-market without infrastructure investment
+- You need billing, payments, and auto-scaling
+- You prefer EveryCRED managing patches and uptime
+
+**Choose On-Premises if:**
+- Data sovereignty policy prohibits cloud storage of credential data
+- You are a government agency requiring NIC or private-DC deployment
+- You need full control over cryptographic keys (KMS)
+- Regulated sector with strict data residency requirements
+`};
+
+PAGES["regions"] = {title:"Regional Coverage", badge:"Core", body:`
+EveryCRED targets four primary regions with different feature sets, regulatory requirements, and deployment strategies.
+
+## Regional Feature Summary
+
+| Region | Total Features | Completed | In Progress | Planned | Completion |
+|---|---|---|---|---|---|
+| **India** | 187 | 82 | 8 | 62 | **44%** |
+| **EU** | 165 | 68 | 12 | 58 | **41%** |
+| **US** | 165 | 68 | 12 | 58 | **41%** |
+| **Africa** | 165 | 68 | 12 | 58 | **41%** |
+
+India has 22 additional features due to India Stack integrations not available in other regions.
+
+---
+
+## India — Deepest Integration
+
+**Live government deployments:** eTDR Platform, Police ID Cards, Arms Licenses.
+
+### India-Exclusive Features
+
+| Feature | Module | Status |
+|---|---|---|
+| DigiLocker Integration (API Setu) | DCS | ✅ Live |
+| SurePass / Aadhaar Data Mapping | DCS | ✅ Live |
+| Aadhaar OTP 2FA | DCS | ✅ Live |
+| Aadhaar-based KYC (Holder Web) | Holder Web | ✅ Live |
+| NFC-based DigiLocker / Aadhaar App | DCS | 🔜 Q1 2026 |
+| DigiLocker VC/VP Support | DCS | 🔜 Q1 2026 |
+| Aadhaar eKYC (Wallet App) | Wallet App | 🔜 Q2 2026 |
+| MOSIP / Inji Integration | MOSIP | 🔜 Q1–Q2 2026 |
+| Aadhaar APP Reusable ID | Use Cases | 🔜 Q4 2026 |
+| Hindi Language Support | DCS + Contributor | 🔜 Q4 2026 |
+| Marathi Language Support | DCS + Contributor | 🔜 Q4 2026 |
+| DPDP Act 2023 Compliance | Compliances | ⚠️ Q2 2026 |
+| Aadhaar Policy Compliance | Compliances | ⚠️ Q2 2026 |
+
+---
+
+## European Union — Compliance-First Entry
+
+EU market entry is sequenced around compliance milestones.
+
+### Regulatory Gates
+- **GDPR Certification** — Q2 2026 (Critical) — required before processing EU citizen data at scale
+- **eIDAS 2.0** — Q4 2026 (Critical) — required for the EU Digital Identity Wallet (EUDI) ecosystem
+
+### EU-Exclusive Features
+
+| Feature | Module | Status |
+|---|---|---|
+| eIDAS 2.0 | Core VC | 🔜 Q4 2026 |
+| did:ebsi | DID Layer | 🔜 Q4 2026 |
+
+---
+
+## United States — Platform & Developer Ecosystem
+
+No US-exclusive features. The US strategy is enterprise developer adoption via the SDK Sandbox (Q2) and API Key Management (Q2).
+
+### Key Gate
+**SOC2 Type II** — Q2 2026 (Critical) — required for enterprise and government contracts.
+
+No committed anchor use case yet. Bank Demo (Q1) and Hotel Demo (Q2) platforms are designed to seed market conversations.
+
+---
+
+## Africa — Emerging Market
+
+MOSIP integration (Q1–Q2 2026) is the primary differentiator for African government identity programs. Africa uses the same global feature set as US/EU.
+
+### MOSIP Integration Plan
+| Quarter | Feature |
+|---|---|
+| Q1 2026 | Inji Setup & Integration |
+| Q2 2026 | MOSIP Data Registry |
+| Q2 2026 | eSignet Integration |
+`};
+
+PAGES["dcs-overview"] = {title:"DCS — Overview", badge:"Platform", body:`
+The Digital Credentialing Solution (DCS) is EveryCRED's primary issuer-facing platform. It consists of three tightly integrated sub-applications that together cover the complete credential issuance lifecycle.
+
+## Three Sub-Applications Inside DCS
+
+### 1. Issuer Dashboard
+The core management interface used by credential-issuing organisations. Covers:
+- Issuer profile management with automatic DID assignment
+- Subject template (schema) creation with typed fields
+- Record ingestion — manual API or bulk CSV/Excel upload
+- Credential issuance, scheduling, revocation, sharing
+- Analytics, reporting, and risk monitoring (AI-powered — Q1 2026)
+- Team management with fine-grained RBAC
+- White-label branding and email customisation
+- Workflow builder and multi-stage approval execution
+
+### 2. Contributor Application
+An external-facing data submission portal for third parties who contribute data to issuance workflows. See [Contributor Application →](#contributor-app)
+
+### 3. Holder Web Application
+A browser-based credential portal for holders (distinct from the mobile Wallet App). See [Holder Web Application →](#holder-web)
+
+---
+
+## DCS Deployment Models
+
+| Dimension | SaaS | On-Premises |
+|---|---|---|
+| Infrastructure | EveryCRED-hosted (AWS) | Client data centre |
+| Billing & Pricing module | ✅ | ✖ |
+| Payment Gateway | ✅ | ✖ |
+| Multi-tenancy | Managed | Client-managed |
+| Scalability | Auto-scaling | Client-managed |
+| S3 Storage | EveryCRED managed | Client must provision |
+| KMS | EveryCRED managed | Client must manage |
+
+---
+
+## Completion: 74% (45/61 features)
+
+| Category | Done | In Progress | Planned |
+|---|---|---|---|
+| Auth & Onboarding | 4 | 0 | 0 |
+| Issuer Management | 6 | 0 | 2 |
+| Subject Templates | 3 | 0 | 1 |
+| Records | 4 | 0 | 2 |
+| Credentials | 8 | 1 | 3 |
+| Workflow Engine | 5 | 0 | 0 |
+| Analytics | 3 | 1 | 2 |
+| Team & RBAC | 5 | 0 | 0 |
+| White Label & Branding | 3 | 0 | 2 |
+| India Integrations | 4 | 0 | 2 |
+| Billing (SaaS only) | 0 | 0 | 2 |
+| Language Support | 0 | 0 | 2 |
+
+---
+
+## 2026 DCS Delivery Plan
+
+| Quarter | Features |
+|---|---|
+| Q1 | Subject Library, Email Settings, Risk Analytics (AI), NFC DigiLocker, DigiLocker VC/VP, Tenant DB Management |
+| Q2 | Individual Credentials Analytics, Reports Module |
+| Q3 | Zapier Integration |
+| Q4 | Credential Template Builder, Landing Page Builder, Hindi & Marathi, Billing & Payment (SaaS) |
+`};
+
+PAGES["contributor-app"] = {title:"Contributor Application", badge:"Platform", body:`
+The Contributor Application is a sub-system within DCS that allows **external data providers** to participate in credential issuance workflows without being granted full issuer access.
+
+## What Contributors Are
+
+Contributors are third parties — exam boards, HR systems, verification agencies, educational bodies — who hold data that an issuer needs before a credential can be issued. Rather than the issuer manually importing data, EveryCRED routes collection through the Contributor Application.
+
+## Submission Flow
+
+![Contributor submission flow](assets/contributor-submission-flow.png)
+
+## Contributor Account Management
+
+| Endpoint | Description |
+|---|---|
+| \`POST /v1/contributor/\` | Register a contributor organisation |
+| \`GET /v1/contributor/available-orgs\` | Browse available contributor organisations |
+| \`POST /v1/contributor/joining_request\` | Request to join as a contributor |
+| \`POST /v1/contributor/accept-reject\` | Issuer accepts or rejects a contributor |
+| \`PATCH /v1/contributor/status/{id}\` | Toggle contributor active/inactive |
+| \`POST /v1/contributor/submission\` | Submit data (token-based, no JWT) |
+| \`GET /v1/contributor/pending\` | List pending contributor requests |
+
+## Key Technical Detail: Deferred Async Push
+
+After a contributor submits data, any push to an external connector is deferred to a FastAPI **BackgroundTask** that runs *after* the HTTP response is sent and the database transaction commits — preventing deadlocks:
+
+\`\`\`python
+background_tasks.add_task(run_deferred_contributor_store_request, ...)
+# StoreRequestService.store_request() executes POST-commit
+\`\`\`
+
+A Celery task then sends an inbox notification to the issuer asynchronously via the \`credential_queue\`.
+
+## Completion: 71% (5/7 features)
+
+| Feature | Status |
+|---|---|
+| Signup & Login | ✅ Live |
+| Social Login Integration | ✅ Live |
+| Profile Management | ✅ Live |
+| Data Submission (tokenised) | ✅ Live |
+| Task History & Tracking | ✅ Live |
+| Hindi Language Support (India) | 🔜 Q1 2026 |
+| Marathi Language Support (India) | 🔜 Q1 2026 |
+`};
+
+PAGES["holder-web"] = {title:"Holder Web Application", badge:"Platform", body:`
+The Holder Web Application is a **browser-based credential portal** embedded within DCS. It gives credential recipients a no-install way to access, view, download, and share their credentials.
+
+## Holder Web vs Wallet App
+
+| Dimension | Holder Web Application | Wallet App (Mobile) |
+|---|---|---|
+| Platform | Web browser | iOS + Android |
+| Managed by | Issuer (within DCS) | Holder (standalone) |
+| Offline use | No | Yes (planned) |
+| Selective disclosure | No | Yes (SD-JWT) |
+| W3C VP presentation | No | Yes (planned Q1 2026) |
+| DID-based identity | No | Yes |
+| India KYC (Aadhaar) | ✅ Live | 🔜 Q2 2026 |
+| White-label | Yes | 🔜 Q2 2026 |
+| Installation required | No | Yes |
+| Cross-wallet interop | No | 🔜 Q2 2026 (DIDComm) |
+
+## What Holders Can Do (Web)
+
+- View all credentials received across issuers
+- Download PDF certificates
+- Share credentials via secure link or QR code
+- Submit KYC verification (Aadhaar eKYC, India)
+- Update profile information
+- Track credential status (issued, expired, revoked)
+
+## Technical Notes
+
+- Holder Web authentication uses a separate holder JWT middleware (\`get_current_holder\`), **distinct** from the standard issuer user JWT
+- Holder accounts can be created by issuers, or auto-created during workflow request delivery when a holder email is specified
+- Soft-delete applies — holders with active credentials cannot be permanently removed
+- Aadhaar Data Fetch integration: holder initiates eKYC, data auto-populates their profile
+
+## Completion: 100% (5/5 features)
+
+| Feature | Region | Status |
+|---|---|---|
+| Signup & Login | All | ✅ Live |
+| Profile Management | All | ✅ Live |
+| Data Submission | All | ✅ Live |
+| Aadhaar-based KYC | India only | ✅ Live |
+| Aadhaar Data Fetch & eKYC | India only | ✅ Live |
+
+> The Holder Web Application is the **only EveryCRED component at 100% completion**.
+`};
+
+PAGES["verifier-platform"] = {title:"Verifier — White-Label & Own", badge:"Platform", body:`
+EveryCRED provides credential verification in two modes that run on the same underlying engine.
+
+## Two Verification Modes
+
+### EveryCRED Own Verifier
+A public verification portal and REST API operated by EveryCRED. Any third party can verify a credential by:
+- Entering a UUID in the portal
+- Scanning a QR code embedded in a PDF certificate
+- Calling the public REST API directly
+
+No account, login, or API key required.
+
+### White-Label Verifier
+Issuers deploy a **fully branded verification portal** under their own domain. Configuration includes:
+- Custom logo, colour theme, and typography
+- Custom domain or subdomain
+- Branded verification result page
+- Configurable data fields displayed to verifiers
+
+Both modes run on the same verification engine with identical six-check validation.
+
+---
+
+## Verification Checks
+
+All six checks must pass for \`is_valid: true\`.
+
+| Check | What Is Verified |
+|---|---|
+| \`signature_valid\` | Ed25519 signature matches issuer's public key (via DID resolution) |
+| \`issuer_valid\` | Issuer DID is recognised and active |
+| \`subject_valid\` | Holder/subject information is internally consistent |
+| \`not_revoked\` | Credential not in RevocationList2020 |
+| \`not_expired\` | Current date is within \`valid_from\` – \`valid_until\` |
+| \`blockchain_verified\` | On-chain anchor hash matches credential data |
+
+---
+
+## API Endpoints
+
+**Base path:** \`/v1/verifier\` — All endpoints publicly accessible, no authentication required.
+
+| Method | Path | Description |
+|---|---|---|
+| GET | \`/user/credential/validate/{uuid}\` | Full 6-check validation result |
+| GET | \`/user/credential/{uuid}\` | View full credential with all claims |
+| POST | \`/user/credential/upload/json\` | Batch verify via JSON upload |
+
+---
+
+## Completion: 60% (3/5 features)
+
+| Feature | Status |
+|---|---|
+| Verify via Credential UUID | ✅ Live |
+| On-chain / Off-chain Verification | ✅ Live |
+| White-Label Branding | ✅ Live |
+| Token-Based Verification | 🔜 Q3 2026 |
+| Verifier Tenant Management | 🔜 Q3 2026 |
+
+### Token-Based Verification (Q3 2026)
+For enterprise verifiers requiring authenticated access — scoped access tokens, audit trails, custom verification policies.
+
+### Verifier Tenant Management (Q3 2026)
+Multi-tenant verifier portals where each enterprise gets their own branded instance with isolated history and analytics.
+`};
+
+PAGES["did-platform"] = {title:"DID Methods & Resolver", badge:"Platform", body:`
+EveryCRED operates a dedicated DID layer that manages identity creation, document hosting, and resolution for all platform participants.
+
+## What the DID Layer Does
+
+1. **Auto-generates a DID** for every new issuer profile (immutable from creation)
+2. **Hosts DID documents** that verifiers resolve to get the issuer's public key
+3. **Resolves external DIDs** from multiple methods
+4. **Manages signing key material** for credential issuance and verification
+
+## Supported DID Methods
+
+| Method | Status | Description |
+|---|---|---|
+| \`did:evrc\` | ✅ Live | EveryCRED's native blockchain-anchored DID |
+| \`did:jwk\` | ⚠️ Partial | JSON Web Key-based lightweight DID |
+| \`did:key\` | 🔜 Q3 2026 | Pure cryptographic DID (no external resolution needed) |
+| \`did:web\` | 🔜 Q3 2026 | Domain-anchored DID — resolves from issuer's own domain |
+| \`did:ebsi\` | 🔜 Q4 2026 | EU EBSI blockchain DID (required for eIDAS 2.0) |
+
+## DID Document Structure
+
+\`\`\`json
+{
+  "@context": "https://www.w3.org/ns/did/v1",
+  "id": "did:evrc:123456789abcdefg",
+  "verificationMethod": [{
+    "id": "did:evrc:123456789abcdefg#key-1",
+    "type": "Ed25519VerificationKey2020",
+    "controller": "did:evrc:123456789abcdefg",
+    "publicKeyMultibase": "z6MkjBWPP..."
+  }],
+  "assertionMethod": ["did:evrc:123456789abcdefg#key-1"],
+  "authentication": ["did:evrc:123456789abcdefg#key-1"]
+}
+\`\`\`
+
+## Resolver API
+
+| Method | Path | Auth | Description |
+|---|---|---|---|
+| GET | \`/v1/resolver/did/{did}\` | Optional | Resolve any supported DID |
+| GET | \`/v1/resolver/credential/{uuid}\` | Optional | Resolve credential by UUID |
+| POST | \`/v1/resolver/verify\` | Optional | Verify credential against resolved DID |
+
+## Trustless Verification Flow
+
+![Trustless verification flow](assets/trustless-verification-flow.png)
+
+## Completion: 67% (2/3 features)
+
+| Feature | Status |
+|---|---|
+| DID Drivers Support | ✅ Live |
+| Public DID Resolver Integration | ✅ Live |
+| DID Lifecycle Management | ⚠️ Q4 2026 |
+
+**DID Lifecycle Management (Q4 2026):** Full DID create/update/deactivate flows, key rotation and revocation, W3C DID Core 1.0 full compliance.
+
+## did:web Hosting Notes
+- DID document must be publicly available at a well-known URL on the issuer's domain
+- Use a CDN — verifiers worldwide may resolve the DID during every verification call
+- DID documents rarely change — aggressive caching is appropriate
+- Downtime on the issuer's server will prevent DID resolution and break verification
+`};
+
+// Inject just before the RENDER ENGINE comment
+
+// ─────────────────────────────────────────────────────────────────────────────
+// RENDER ENGINE
+// ─────────────────────────────────────────────────────────────────────────────
+
+function renderMarkdown(text) {
+  let html = '';
+  const lines = text.trim().split('\n');
+  let i = 0;
+
+  function inlineFmt(t) {
+    return t
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/`([^`]+)`/g, '<code>$1</code>')
+      .replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
+      .replace(/\[([^\]]+)\]\(#([^)]+)\)/g, '<a href="#" onclick="navigate(\'$2\');return false;">$1</a>');
+  }
+
+  while (i < lines.length) {
+    const line = lines[i];
+
+
+    // Embedded architecture diagram (Platform Architecture page)
+    if (line.trim() === '{{ARCHITECTURE_DIAGRAM}}') {
+      html += `
+<div class="ec-arch-panel">
+  <div class="ec-arch-toolbar">
+    <div class="ec-arch-toolbar-title">Interactive system map</div>
+    <div class="ec-arch-legend">
+      <span class="lg-dcs">DCS</span>
+      <span class="lg-wallet">Wallet</span>
+      <span class="lg-saas">SaaS</span>
+      <span class="lg-resolver">Resolver</span>
+      <span class="lg-verifier">Verifier</span>
+      <span class="lg-contrib">Contributor</span>
+      <span class="lg-did">DID</span>
+    </div>
+    <span class="ec-arch-hint">Scroll to explore</span>
+  </div>
+  <div class="ec-arch-body">
+    <iframe class="ec-arch-frame" src="assets/platform-architecture-diagram.html?embed=1" title="EveryCRED System Architecture Diagram" loading="lazy"></iframe>
+  </div>
+</div>`;
+      i++;
+      continue;
+    }
+
+    // Markdown image: ![alt](url)  or  ![alt|wide](url) for taller/wide diagrams
+    const imgLine = line.match(/^!\[([^\]]*)\]\(([^)]+)\)\s*$/);
+    if (imgLine) {
+      function escapeAttr(s) { return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+      const altRaw = imgLine[1];
+      const wide = /\|wide$/i.test(altRaw);
+      const altText = altRaw.replace(/\|wide$/i, '').trim();
+      const alt = escapeAttr(altText);
+      const src = escapeAttr(imgLine[2]);
+      const figClass = 'md-figure' + (wide ? ' md-figure--wide' : '');
+      const caption = altText
+        ? `<figcaption class="md-figure-caption">${alt}</figcaption>`
+        : '';
+      html += `<figure class="${figClass}"><img src="${src}" alt="${alt}" loading="lazy" decoding="async">${caption}</figure>`;
+      i++;
+      continue;
+    }
+
+    // Code block
+    if (line.startsWith('```')) {
+      const lang = line.slice(3).trim();
+      const codeLines = [];
+      i++;
+      while (i < lines.length && !lines[i].startsWith('```')) {
+        codeLines.push(lines[i].replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'));
+        i++;
+      }
+      html += `<pre>${lang ? `<div class="lang-label">${lang}</div>` : ''}<code>${codeLines.join('\n')}</code></pre>`;
+      i++;
+      continue;
+    }
+
+    // Table
+    if (line.startsWith('|')) {
+      const tableLines = [];
+      while (i < lines.length && lines[i].startsWith('|')) {
+        tableLines.push(lines[i]);
+        i++;
+      }
+      if (tableLines.length >= 2) {
+        const headers = tableLines[0].split('|').filter(c => c.trim()).map(c => c.trim());
+        const rows = tableLines.slice(2).map(r => r.split('|').filter(c => c.trim()).map(c => c.trim()));
+        html += `<div class="table-wrap"><table><thead><tr>${headers.map(h => `<th>${inlineFmt(h)}</th>`).join('')}</tr></thead><tbody>`;
+        rows.forEach(r => {
+          html += `<tr>${r.map(c => `<td>${inlineFmt(c)}</td>`).join('')}</tr>`;
+        });
+        html += `</tbody></table></div>`;
+      }
+      continue;
+    }
+
+    if (line.startsWith('## ')) { html += `<h2>${inlineFmt(line.slice(3))}</h2>`; }
+    else if (line.startsWith('### ')) { html += `<h3>${inlineFmt(line.slice(4))}</h3>`; }
+    else if (line.startsWith('#### ')) { html += `<h4>${inlineFmt(line.slice(5))}</h4>`; }
+    else if (line.startsWith('> ')) { html += `<blockquote>${inlineFmt(line.slice(2))}</blockquote>`; }
+    else if (line.startsWith('---')) { html += `<hr>`; }
+    else if (line.match(/^[-*] /)) {
+      const items = [];
+      while (i < lines.length && lines[i].match(/^[-*] /)) {
+        items.push(`<li>${inlineFmt(lines[i].slice(2))}</li>`);
+        i++;
+      }
+      html += `<ul>${items.join('')}</ul>`;
+      continue;
+    }
+    else if (line.match(/^\d+\. /)) {
+      const items = [];
+      while (i < lines.length && lines[i].match(/^\d+\. /)) {
+        items.push(`<li>${inlineFmt(lines[i].replace(/^\d+\. /,''))}</li>`);
+        i++;
+      }
+      html += `<ol>${items.join('')}</ol>`;
+      continue;
+    }
+    else if (line.trim()) {
+      html += `<p>${inlineFmt(line)}</p>`;
+    }
+
+    i++;
+  }
+  return html;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// NAVIGATION & RENDERING
+// ─────────────────────────────────────────────────────────────────────────────
+
+let currentPage = 'intro';
+
+function buildNav(filter) {
+  const root = document.getElementById('nav-root');
+  root.innerHTML = '';
+  NAV.forEach(({g, icon, items}) => {
+    const filtered = filter
+      ? items.filter(([, label]) => label.toLowerCase().includes(filter.toLowerCase()))
+      : items;
+    if (!filtered.length) return;
+    const grpLabel = document.createElement('div');
+    grpLabel.className = 'nav-group-label';
+    grpLabel.textContent = icon + ' ' + g;
+    root.appendChild(grpLabel);
+    filtered.forEach(([id, label]) => {
+      const btn = document.createElement('button');
+      btn.className = 'nav-item' + (id === currentPage ? ' active' : '');
+      btn.textContent = label;
+      btn.onclick = () => navigate(id);
+      root.appendChild(btn);
+    });
+  });
+}
+
+function navigate(id) {
+  if (!PAGES[id]) return;
+  currentPage = id;
+  buildNav(document.getElementById('search').value);
+  renderPage(id);
+  document.getElementById('content-wrap').scrollTop = 0;
+}
+
+window.navigate = navigate;
+
+function renderPage(id) {
+  const page = PAGES[id];
+  if (!page) return;
+
+  const bodyEl = document.getElementById('page-body');
+
+  // Breadcrumb
+  const group = NAV.find(g => g.items.some(([pid]) => pid === id));
+  const bc = document.getElementById('breadcrumb');
+  bc.innerHTML = `<span>docs</span>`;
+  if (group) bc.innerHTML += ` <span>›</span> <span>${group.g.toLowerCase()}</span>`;
+  bc.innerHTML += ` <span>›</span> <span style="color:#64748b">${page.title}</span>`;
+
+  // Badge
+  const badgeWrap = document.getElementById('page-badge-wrap');
+  if (page.badge && BADGE[page.badge]) {
+    const b = BADGE[page.badge];
+    badgeWrap.innerHTML = `<span class="page-badge" style="background:${b.bg};color:${b.color};border:1px solid ${b.color}33">${page.badge}</span>`;
+  } else {
+    badgeWrap.innerHTML = '';
+  }
+
+  // Title
+  document.getElementById('page-title').textContent = page.title;
+  document.title = `${page.title} — EveryCRED Docs`;
+
+  // Body
+  bodyEl.className = 'md';
+  bodyEl.innerHTML = renderMarkdown(resolveEnvTokens(page.body));
+  const wide = id === 'platform-architecture';
+  document.getElementById('content-wrap').classList.toggle('content-wrap--wide', wide);
+  document.getElementById('content').classList.toggle('content--wide', wide);
+
+  setupArchitectureFrames(bodyEl);
+
+  // Footer
+  document.getElementById('footer-txt').textContent = `EveryCRED Documentation · 2026`;
+}
+
+function filterNav(val) {
+  buildNav(val);
+}
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('collapsed');
+}
+
+function setupArchitectureFrames(root) {
+  if (!root) return;
+  root.querySelectorAll('.ec-arch-frame').forEach(frame => {
+    const applyHeight = (h) => {
+      frame.style.height = Math.max(h + 12, 480) + 'px';
+      frame.style.minHeight = '';
+    };
+    const resize = () => {
+      try {
+        const doc = frame.contentDocument;
+        if (!doc) return;
+        const h = Math.max(
+          doc.documentElement.scrollHeight,
+          doc.body ? doc.body.scrollHeight : 0
+        );
+        applyHeight(h);
+      } catch (_) {
+        frame.style.minHeight = '720px';
+      }
+    };
+    frame.onload = resize;
+    if (frame.contentDocument?.readyState === 'complete') resize();
+    frame._ecResize = resize;
+  });
+}
+
+if (!window._ecArchMessageBound) {
+  window._ecArchMessageBound = true;
+  window.addEventListener('message', (e) => {
+    if (!e.data || e.data.type !== 'ec-arch-resize') return;
+    document.querySelectorAll('.ec-arch-frame').forEach(frame => {
+      if (frame._ecResize) frame.style.height = Math.max(e.data.height + 12, 480) + 'px';
+    });
+  });
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────────────────────────────────────
+
+initEnvPicker();
+buildNav('');
+renderPage('intro');
+</script>
+</body>
+</html>

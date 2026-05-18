@@ -1,0 +1,1408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EveryCRED — System Architecture</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+:root {
+  --bg:        #05070f;
+  --bg2:       #080c18;
+  --panel:     #0d1428;
+  --panel2:    #10192e;
+  --border:    #182440;
+  --border2:   #1f2f50;
+  --border3:   #263860;
+
+  --dcs:       #2563eb;
+  --dcs-l:     #60a5fa;
+  --dcs-glow:  rgba(37,99,235,0.18);
+
+  --wallet:    #7c3aed;
+  --wallet-l:  #a78bfa;
+  --wallet-glow: rgba(124,58,237,0.18);
+
+  --saas:      #0891b2;
+  --saas-l:    #67e8f9;
+  --saas-glow: rgba(8,145,178,0.18);
+
+  --resolver:  #059669;
+  --resolver-l:#34d399;
+  --resolver-glow: rgba(5,150,105,0.18);
+
+  --verifier:  #dc2626;
+  --verifier-l:#f87171;
+  --verifier-glow: rgba(220,38,38,0.18);
+
+  --contrib:   #d97706;
+  --contrib-l: #fbbf24;
+  --contrib-glow: rgba(217,119,6,0.18);
+
+  --did:       #db2777;
+  --did-l:     #f472b6;
+  --did-glow:  rgba(219,39,119,0.2);
+
+  --neutral:   #94a3b8;
+  --neutral-bg:rgba(100,116,139,0.12);
+
+  --text:      #e2e8f0;
+  --text-b:    #94a3b8;
+  --text-c:    #4a5f80;
+  --mono:      'JetBrains Mono', ui-monospace, monospace;
+  --sans:      'Inter', system-ui, sans-serif;
+
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 20px;
+  --s-6: 24px;
+  --s-7: 32px;
+  --s-8: 40px;
+  --s-9: 48px;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 16px;
+}
+
+html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+
+body {
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(ellipse 70% 45% at 50% -8%, rgba(37, 99, 235, 0.14), transparent 55%),
+    radial-gradient(circle at 1px 1px, rgba(148, 163, 184, 0.06) 1px, transparent 0);
+  background-size: auto, 22px 22px;
+  font-family: var(--sans);
+  font-size: 13px;
+  color: var(--text);
+  padding: var(--s-7) var(--s-6) var(--s-9);
+  min-height: auto;
+  line-height: 1.5;
+}
+
+.ico {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: var(--s-8);
+  padding-bottom: var(--s-7);
+  border-bottom: 1px solid var(--border);
+}
+.header .eyebrow {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--saas-l);
+  margin-bottom: var(--s-3);
+}
+.header h1 {
+  font-size: clamp(1.75rem, 4vw, 2.25rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: #f1f5f9;
+  margin-bottom: var(--s-2);
+}
+.header p {
+  font-size: 14px;
+  color: var(--text-b);
+  max-width: 36rem;
+  margin: 0 auto;
+  line-height: 1.65;
+}
+
+.canvas {
+  max-width: 1320px;
+  margin: 0 auto;
+}
+
+.section-label {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-c);
+  padding-bottom: var(--s-3);
+  margin: var(--s-7) 0 var(--s-4);
+  border-bottom: 1px solid var(--border);
+}
+.section-label:first-of-type { margin-top: 0; }
+
+.row {
+  display: flex;
+  gap: var(--s-4);
+  margin-bottom: var(--s-4);
+  flex-wrap: wrap;
+  align-items: stretch;
+}
+
+.connector {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  margin: 8px 0;
+  position: relative;
+}
+.conn-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border3), transparent);
+}
+.conn-center {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 18px;
+}
+.conn-arrow {
+  font-size: 14px;
+  color: var(--text-c);
+}
+.conn-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 1px;
+  color: var(--text-c);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.zone {
+  border-radius: var(--radius-xl);
+  padding: var(--s-5) var(--s-5) var(--s-4);
+  margin-bottom: var(--s-5);
+  border: 1px solid var(--border);
+}
+
+.card {
+  border-radius: var(--radius-md);
+  padding: var(--s-4) var(--s-4) var(--s-3);
+  border: 1px solid var(--border2);
+  background: var(--panel);
+  flex: 1;
+  min-width: 180px;
+  transition: box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+}
+.card:hover {
+  transform: translateY(-2px);
+  border-color: var(--border3);
+}
+
+.card-actor {
+  min-width: 148px;
+  max-width: 168px;
+  flex: 1 1 148px;
+  background: rgba(15,23,42,0.65);
+  border-color: rgba(100,116,139,0.28);
+}
+.card-actor .card-title { color: #cbd5e1; }
+.card-actor .card-subtitle { color: #64748b; }
+.card-actor .card-icon { background: var(--neutral-bg); color: var(--neutral); }
+.card-actor .card-body { font-size: 11px; margin-bottom: 0; }
+
+.card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-3);
+  margin-bottom: var(--s-3);
+}
+.card-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.card-title {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+.card-subtitle {
+  font-size: 10px;
+  font-family: var(--mono);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  margin-top: 2px;
+}
+.card-body {
+  font-size: 12px;
+  color: var(--text-b);
+  line-height: 1.6;
+  margin-bottom: var(--s-3);
+}
+.card-body strong { color: var(--text); font-weight: 600; }
+.card-body code {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: inherit;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+}
+.chip {
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 500;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border3);
+  color: var(--text-b);
+  letter-spacing: 0.02em;
+}
+
+.down-arrow {
+  display: flex;
+  justify-content: center;
+  margin: var(--s-2) 0 var(--s-3);
+  color: var(--border3);
+}
+.down-arrow .ico { width: 20px; height: 20px; }
+
+.subzone {
+  margin-top: var(--s-4);
+  border: 1px solid rgba(37,99,235,0.22);
+  border-radius: var(--radius-md);
+  padding: var(--s-4);
+  background: rgba(37,99,235,0.04);
+}
+.subzone-title {
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(96,165,250,0.55);
+  margin-bottom: var(--s-3);
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+}
+.subzone-title::before,
+.subzone-title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(96,165,250,0.22);
+}
+
+.flow-bridge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-1);
+  padding: 0 var(--s-1);
+  flex-shrink: 0;
+  color: rgba(96,165,250,0.45);
+}
+.flow-bridge .ico { width: 16px; height: 16px; }
+.flow-bridge-label {
+  font-family: var(--mono);
+  font-size: 8px;
+  color: var(--text-c);
+  text-align: center;
+  line-height: 1.35;
+  letter-spacing: 0.04em;
+}
+
+.endpoint-pill {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 9px;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  margin: var(--s-2) 0;
+  line-height: 1.4;
+}
+.endpoint-pill--contrib {
+  color: rgba(251,191,36,0.85);
+  background: rgba(217,119,6,0.1);
+  border: 1px solid rgba(217,119,6,0.28);
+}
+.endpoint-pill--holder {
+  color: rgba(167,139,250,0.85);
+  background: rgba(124,58,237,0.1);
+  border: 1px solid rgba(124,58,237,0.28);
+}
+
+.flow-pipeline {
+  margin-top: var(--s-3);
+  padding: var(--s-3) var(--s-4);
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+.flow-pipeline-title {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-c);
+  margin-bottom: var(--s-3);
+}
+.flow-pipeline-steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  align-items: center;
+}
+.flow-step {
+  font-size: 11px;
+  line-height: 1.45;
+  padding: var(--s-2) var(--s-3);
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+}
+.flow-step small {
+  display: block;
+  font-size: 10px;
+  color: var(--text-c);
+  margin-top: 2px;
+}
+.flow-step--dcs { color: #93c5fd; background: rgba(37,99,235,0.1); border-color: rgba(37,99,235,0.22); }
+.flow-step--contrib { color: #fbbf24; background: rgba(217,119,6,0.1); border-color: rgba(217,119,6,0.22); }
+.flow-step--holder { color: #a78bfa; background: rgba(124,58,237,0.1); border-color: rgba(124,58,237,0.22); }
+.flow-arrow { color: var(--text-c); font-size: 14px; user-select: none; }
+
+.card-infra {
+  border-color: rgba(245,158,11,0.28);
+  box-shadow: 0 0 20px rgba(245,158,11,0.08);
+}
+.card-infra .card-icon { background: rgba(245,158,11,0.12); color: #fbbf24; }
+.card-infra .card-title { color: #fbbf24; }
+.card-infra .card-subtitle { color: rgba(251,191,36,0.5); }
+
+.card-nested-contrib {
+  border-color: rgba(217,119,6,0.32);
+  box-shadow: 0 0 20px rgba(217,119,6,0.1);
+  background: rgba(13,20,40,0.92);
+}
+.card-nested-contrib .card-title { color: var(--contrib-l); }
+.card-nested-contrib .card-subtitle { color: rgba(251,191,36,0.55); }
+.card-nested-contrib .card-icon { background: rgba(217,119,6,0.14); color: var(--contrib-l); }
+
+.card-nested-holder {
+  border-color: rgba(124,58,237,0.32);
+  box-shadow: 0 0 20px rgba(124,58,237,0.1);
+  background: rgba(13,20,40,0.92);
+}
+.card-nested-holder .card-title { color: var(--wallet-l); }
+.card-nested-holder .card-subtitle { color: rgba(167,139,250,0.55); }
+.card-nested-holder .card-icon { background: rgba(124,58,237,0.14); color: var(--wallet-l); }
+
+.t-dcs .card-icon      { background: rgba(37,99,235,0.15); color: var(--dcs-l); }
+.t-dcs .card-title     { color: var(--dcs-l); }
+.t-dcs .card-subtitle  { color: rgba(96,165,250,0.6); }
+.t-dcs                 { border-color: rgba(37,99,235,0.3); box-shadow: 0 0 28px var(--dcs-glow); }
+.zone-dcs              { background: rgba(37,99,235,0.04); border-color: rgba(37,99,235,0.2); }
+
+.t-wallet .card-icon   { background: rgba(124,58,237,0.15); color: var(--wallet-l); }
+.t-wallet .card-title  { color: var(--wallet-l); }
+.t-wallet .card-subtitle { color: rgba(167,139,250,0.6); }
+.t-wallet              { border-color: rgba(124,58,237,0.3); box-shadow: 0 0 28px var(--wallet-glow); }
+.zone-wallet           { background: rgba(124,58,237,0.04); border-color: rgba(124,58,237,0.2); }
+
+.t-saas .card-icon     { background: rgba(8,145,178,0.15); color: var(--saas-l); }
+.t-saas .card-title    { color: var(--saas-l); }
+.t-saas .card-subtitle { color: rgba(103,232,249,0.6); }
+.t-saas                { border-color: rgba(8,145,178,0.3); box-shadow: 0 0 28px var(--saas-glow); }
+.zone-saas             { background: rgba(8,145,178,0.04); border-color: rgba(8,145,178,0.2); }
+
+.t-resolver .card-icon { background: rgba(5,150,105,0.15); color: var(--resolver-l); }
+.t-resolver .card-title{ color: var(--resolver-l); }
+.t-resolver .card-subtitle { color: rgba(52,211,153,0.6); }
+.t-resolver            { border-color: rgba(5,150,105,0.3); box-shadow: 0 0 28px var(--resolver-glow); }
+.zone-resolver         { background: rgba(5,150,105,0.04); border-color: rgba(5,150,105,0.2); }
+
+.t-verifier .card-icon { background: rgba(220,38,38,0.15); color: var(--verifier-l); }
+.t-verifier .card-title{ color: var(--verifier-l); }
+.t-verifier .card-subtitle { color: rgba(248,113,113,0.6); }
+.t-verifier            { border-color: rgba(220,38,38,0.3); box-shadow: 0 0 28px var(--verifier-glow); }
+.zone-verifier         { background: rgba(220,38,38,0.04); border-color: rgba(220,38,38,0.2); }
+
+.t-contrib .card-icon  { background: rgba(217,119,6,0.15); color: var(--contrib-l); }
+.t-contrib .card-title { color: var(--contrib-l); }
+.t-contrib .card-subtitle { color: rgba(251,191,36,0.6); }
+.t-contrib             { border-color: rgba(217,119,6,0.3); box-shadow: 0 0 28px var(--contrib-glow); }
+.zone-contrib          { background: rgba(217,119,6,0.04); border-color: rgba(217,119,6,0.2); }
+
+.t-did .card-icon      { background: rgba(219,39,119,0.15); color: var(--did-l); }
+.t-did .card-title     { color: var(--did-l); }
+.t-did .card-subtitle  { color: rgba(244,114,182,0.6); }
+.t-did                 { border-color: rgba(219,39,119,0.35); box-shadow: 0 0 32px var(--did-glow); }
+.zone-did              { background: rgba(219,39,119,0.05); border-color: rgba(219,39,119,0.25); }
+
+.flow-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  margin-top: 6px;
+}
+.flow-table tr:not(:last-child) td {
+  border-bottom: 1px solid var(--border);
+}
+.flow-table td {
+  padding: 9px 12px;
+  vertical-align: top;
+  color: var(--text-b);
+  line-height: 1.5;
+}
+.flow-table td:first-child {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--saas-l);
+  white-space: nowrap;
+  padding-right: 16px;
+  padding-top: 10px;
+}
+.flow-table strong { color: var(--text); }
+
+.imap {
+  background: var(--panel2);
+  border: 1px solid var(--border2);
+  border-radius: 12px;
+  padding: 20px 24px;
+}
+.imap-title {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-c);
+  margin-bottom: 14px;
+}
+.imap-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px;
+}
+.imap-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: rgba(255,255,255,0.025);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--text-b);
+}
+.imap-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  margin-top: 4px;
+  flex-shrink: 0;
+}
+
+.zone-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.zone-bar {
+  width: 3px; height: 26px; border-radius: 2px;
+}
+.zone-header-text h3 {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+}
+.zone-header-text p {
+  font-size: 11px;
+  color: var(--text-b);
+  margin-top: 2px;
+  line-height: 1.45;
+}
+
+.did-band {
+  background: linear-gradient(135deg, rgba(219,39,119,0.08), rgba(124,58,237,0.06));
+  border: 1px solid rgba(219,39,119,0.25);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 20px;
+}
+.did-band-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.did-badge {
+  font-family: var(--mono);
+  font-size: 12px;
+  padding: 5px 14px;
+  border-radius: 20px;
+  background: rgba(219,39,119,0.12);
+  border: 1px solid rgba(219,39,119,0.35);
+  color: var(--did-l);
+  letter-spacing: 1px;
+}
+.did-method-box {
+  font-family: var(--mono);
+  font-size: 13px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  background: rgba(219,39,119,0.1);
+  border: 1px solid rgba(219,39,119,0.3);
+  color: var(--did-l);
+  display: inline-block;
+}
+.did-spec-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px,1fr));
+  gap: 10px;
+}
+.did-spec-item {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  padding: 10px 14px;
+}
+.did-spec-item .label {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  color: var(--text-c);
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+.did-spec-item .value {
+  font-size: 12px;
+  color: var(--text-b);
+  line-height: 1.5;
+}
+.did-spec-item .value code {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--did-l);
+}
+
+footer {
+  text-align: center;
+  margin-top: var(--s-9);
+  padding-top: var(--s-6);
+  border-top: 1px solid var(--border);
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  color: var(--text-c);
+  text-transform: uppercase;
+}
+
+/* ── Component overview strip ── */
+.arch-map {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: var(--s-3);
+  margin-bottom: var(--s-7);
+  padding: var(--s-4);
+  background: rgba(13, 20, 40, 0.65);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-lg);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+.arch-map-item {
+  text-align: center;
+  padding: var(--s-3) var(--s-2);
+  border-radius: var(--radius-md);
+  border: 1px solid color-mix(in srgb, var(--c) 28%, transparent);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--c) 10%, transparent) 0%, transparent 100%);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.arch-map-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--c) 18%, transparent);
+}
+.arch-map-num {
+  display: block;
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  color: var(--text-c);
+  margin-bottom: 4px;
+}
+.arch-map-name {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--c);
+  letter-spacing: -0.02em;
+}
+.arch-map-desc {
+  display: block;
+  font-size: 9px;
+  color: var(--text-c);
+  margin-top: 3px;
+  line-height: 1.35;
+}
+
+.row--actors {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: var(--s-3);
+}
+.row--actors .card-actor {
+  min-width: 0;
+  max-width: none;
+}
+
+.section-num {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--saas-l);
+  padding: 4px 10px;
+  border-radius: 99px;
+  border: 1px solid rgba(103, 232, 249, 0.25);
+  background: rgba(8, 145, 178, 0.1);
+  flex-shrink: 0;
+}
+
+/* ── Embed mode (inside docs iframe) ── */
+html.embed body {
+  padding: var(--s-5) var(--s-4) var(--s-7);
+}
+html.embed .header,
+html.embed footer { display: none; }
+html.embed .arch-map {
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  margin-bottom: var(--s-5);
+  padding: var(--s-3);
+}
+html.embed .arch-map-desc { display: none; }
+html.embed .section-label { margin-top: var(--s-5); }
+html.embed .canvas { max-width: none; }
+
+@media (max-width: 1100px) {
+  .arch-map { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .row--actors { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 640px) {
+  .arch-map { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .row--actors { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+</style>
+</head>
+<body>
+
+<svg xmlns="http://www.w3.org/2000/svg" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true">
+  <symbol id="i-building" viewBox="0 0 24 24"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></symbol>
+  <symbol id="i-plug" viewBox="0 0 24 24"><path d="M12 22v-5"/><path d="M9 8V2"/><path d="M15 8V2"/><path d="M18 8v5a6 6 0 0 1-6 6 6 6 0 0 1-6-6V8Z"/></symbol>
+  <symbol id="i-cpu" viewBox="0 0 24 24"><rect width="16" height="16" x="4" y="4" rx="2"/><rect width="6" height="6" x="9" y="9" rx="1"/><path d="M15 2v2"/><path d="M15 20v2"/><path d="M2 15h2"/><path d="M2 9h2"/><path d="M20 15h2"/><path d="M20 9h2"/><path d="M9 2v2"/><path d="M9 20v2"/></symbol>
+  <symbol id="i-tag" viewBox="0 0 24 24"><path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"/><circle cx="7.5" cy="7.5" r=".5" fill="currentColor"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></symbol>
+  <symbol id="i-zap" viewBox="0 0 24 24"><path d="M4 14a1 1 0 0 0 1 1h4l-1 5a1 1 0 0 0 1 1h1a1 1 0 0 0 .9-.6l5-12A1 1 0 0 0 14 6h-4l1-5a1 1 0 0 0-1-1h-1a1 1 0 0 0-.9.6Z"/></symbol>
+  <symbol id="i-folder" viewBox="0 0 24 24"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></symbol>
+  <symbol id="i-wallet" viewBox="0 0 24 24"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h14a1 1 0 0 0 1-1v-4"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
+  <symbol id="i-id" viewBox="0 0 24 24"><path d="M16 10h2"/><path d="M16 14h2"/><path d="M6.17 15a3 3 0 0 1 5.66 0"/><circle cx="9" cy="11" r="2"/><rect width="20" height="14" x="2" y="5" rx="2"/></symbol>
+  <symbol id="i-settings" viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-clipboard" viewBox="0 0 24 24"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></symbol>
+  <symbol id="i-upload" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></symbol>
+  <symbol id="i-radar" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></symbol>
+  <symbol id="i-key" viewBox="0 0 24 24"><path d="m15.5 7.5 2.3 2.3a1 1 0 0 0 1.4 0l2.1-2.1a1 1 0 0 0 0-1.4L19 4"/><path d="m21 2-9.6 9.6"/><circle cx="7.5" cy="15.5" r="5.5"/></symbol>
+  <symbol id="i-cloud" viewBox="0 0 24 24"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></symbol>
+  <symbol id="i-database" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></symbol>
+  <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></symbol>
+  <symbol id="i-chevron-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-arrow-left-right" viewBox="0 0 24 24"><path d="m16 3 4 4-4 4"/><path d="M20 7H4"/><path d="m8 21-4-4 4-4"/><path d="M4 17h16"/></symbol>
+</svg>
+
+<div class="header">
+  <div class="eyebrow">Digital Credential Platform</div>
+  <h1>EveryCRED Architecture</h1>
+  <p>Seven core components powering a complete Self-Sovereign Identity & Verifiable Credential ecosystem — from issuance to verification.</p>
+</div>
+
+<div class="canvas">
+
+  <div class="arch-map" aria-label="Platform components">
+    <div class="arch-map-item" style="--c: var(--dcs-l)"><span class="arch-map-num">01</span><span class="arch-map-name">DCS</span><span class="arch-map-desc">Issuance core</span></div>
+    <div class="arch-map-item" style="--c: var(--wallet-l)"><span class="arch-map-num">02</span><span class="arch-map-name">Wallet</span><span class="arch-map-desc">Holder app</span></div>
+    <div class="arch-map-item" style="--c: var(--saas-l)"><span class="arch-map-num">03</span><span class="arch-map-name">SaaS</span><span class="arch-map-desc">API layer</span></div>
+    <div class="arch-map-item" style="--c: var(--resolver-l)"><span class="arch-map-num">04</span><span class="arch-map-name">Resolver</span><span class="arch-map-desc">DID resolve</span></div>
+    <div class="arch-map-item" style="--c: var(--verifier-l)"><span class="arch-map-num">05</span><span class="arch-map-name">Verifier</span><span class="arch-map-desc">Public verify</span></div>
+    <div class="arch-map-item" style="--c: var(--contrib-l)"><span class="arch-map-num">06</span><span class="arch-map-name">Contributor</span><span class="arch-map-desc">Workflow data</span></div>
+    <div class="arch-map-item" style="--c: var(--did-l)"><span class="arch-map-num">07</span><span class="arch-map-name">DID</span><span class="arch-map-desc">did:evrc</span></div>
+  </div>
+
+  <div class="section-label"><span class="section-num">01</span> Actors &amp; Entry Points</div>
+  <div class="row row--actors">
+    <div class="card card-actor">
+      <div class="card-header">
+        <div class="card-icon"><svg class="ico" aria-hidden="true"><use href="#i-building"/></svg></div>
+        <div>
+          <div class="card-title">Issuer Org</div>
+          <div class="card-subtitle">University / Corp</div>
+        </div>
+      </div>
+      <div class="card-body">Issues credentials via DCS dashboard</div>
+    </div>
+    <div class="card card-actor">
+      <div class="card-header">
+        <div class="card-icon"><svg class="ico" aria-hidden="true"><use href="#i-user"/></svg></div>
+        <div>
+          <div class="card-title">Holder</div>
+          <div class="card-subtitle">Individual / Org</div>
+        </div>
+      </div>
+      <div class="card-body">Receives &amp; manages credentials via Wallet</div>
+    </div>
+    <div class="card card-actor">
+      <div class="card-header">
+        <div class="card-icon"><svg class="ico" aria-hidden="true"><use href="#i-users"/></svg></div>
+        <div>
+          <div class="card-title">Contributor</div>
+          <div class="card-subtitle">Trusted Operator</div>
+        </div>
+      </div>
+      <div class="card-body">Fills workflow stage data assigned by issuer</div>
+    </div>
+    <div class="card card-actor">
+      <div class="card-header">
+        <div class="card-icon"><svg class="ico" aria-hidden="true"><use href="#i-search"/></svg></div>
+        <div>
+          <div class="card-title">Verifier</div>
+          <div class="card-subtitle">Employer / RP</div>
+        </div>
+      </div>
+      <div class="card-body">Verifies credential authenticity publicly</div>
+    </div>
+    <div class="card card-actor">
+      <div class="card-header">
+        <div class="card-icon"><svg class="ico" aria-hidden="true"><use href="#i-plug"/></svg></div>
+        <div>
+          <div class="card-title">SaaS Client</div>
+          <div class="card-subtitle">API Consumer</div>
+        </div>
+      </div>
+      <div class="card-body">Integrates EveryCRED via API / white-label</div>
+    </div>
+    <div class="card card-actor">
+      <div class="card-header">
+        <div class="card-icon"><svg class="ico" aria-hidden="true"><use href="#i-cpu"/></svg></div>
+        <div>
+          <div class="card-title">DID Agent</div>
+          <div class="card-subtitle">Resolver Client</div>
+        </div>
+      </div>
+      <div class="card-body">Resolves did:evrc: identifiers to DID Documents</div>
+    </div>
+  </div>
+
+  <div class="down-arrow"><svg class="ico" aria-hidden="true"><use href="#i-chevron-down"/></svg></div>
+
+  <div class="section-label"><span class="section-num">02</span> Core Platform Components</div>
+
+  <div class="row">
+
+    <div class="zone zone-dcs" style="flex:1.8; min-width:320px;">
+      <div class="zone-header">
+        <div class="zone-bar" style="background:var(--dcs);"></div>
+        <div class="zone-header-text">
+          <h3 style="color:var(--dcs-l);">① DCS — Digital Credentialing Solution</h3>
+          <p>Core credential management platform · FastAPI · MySQL · Celery</p>
+        </div>
+      </div>
+      <div class="row" style="gap:10px;">
+        <div class="card t-dcs" style="min-width:140px;">
+          <div class="card-header">
+            <div class="card-icon"><svg class="ico" aria-hidden="true"><use href="#i-tag"/></svg></div>
+            <div>
+              <div class="card-title">Issuer Module</div>
+              <div class="card-subtitle">did:evrc: · DID gen</div>
+            </div>
+          </div>
+          <div class="card-body">Create issuer profiles with DID, branding (logo/banner → S3), wallet address, revocation.</div>
+          <div class="chips">
+            <span class="chip">STAGING / PROD</span>
+            <span class="chip">VC / OBv3</span>
+            <span class="chip">Revoke async</span>
+          </div>
+        </div>
+        <div class="card t-dcs" style="min-width:140px;">
+          <div class="card-header">
+            <div class="card-icon"><svg class="ico" aria-hidden="true"><use href="#i-file"/></svg></div>
+            <div>
+              <div class="card-title">Credential Engine</div>
+              <div class="card-subtitle">Issuance · Lifecycle</div>
+            </div>
+          </div>
+          <div class="card-body">Issue, schedule, share, revoke. Signs with Issuer DID key. Anchors hash to blockchain. Async via Celery.</div>
+          <div class="chips">
+            <span class="chip">ed25519</span>
+            <span class="chip">Async 202</span>
+            <span class="chip">Blockchain anchor</span>
+          </div>
+        </div>
+        <div class="card t-dcs" style="min-width:140px;">
+          <div class="card-header">
+            <div class="card-icon"><svg class="ico" aria-hidden="true"><use href="#i-zap"/></svg></div>
+            <div>
+              <div class="card-title">Workflow Engine</div>
+              <div class="card-subtitle">Multi-stage · Tasks</div>
+            </div>
+          </div>
+          <div class="card-body">Workflow definitions with multi-stage pipelines. Assigns contributors per stage. Request tracking &amp; approvals.</div>
+          <div class="chips">
+            <span class="chip">Stages</span>
+            <span class="chip">Celery tasks</span>
+            <span class="chip">Holder request</span>
+          </div>
+        </div>
+      </div>
+      <div class="row" style="gap:10px; margin-top:0;">
+        <div class="card t-dcs" style="min-width:140px;">
+          <div class="card-header">
+            <div class="card-icon"><svg class="ico" aria-hidden="true"><use href="#i-folder"/></svg></div>
+            <div>
+              <div class="card-title">Records &amp; Subjects</div>
+              <div class="card-subtitle">Data · Templates</div>
+            </div>
+          </div>
+          <div class="card-body">Record CRUD, bulk CSV/Excel import. Subject template field definitions. AES field-level encryption.</div>
+          <div class="chips">
+            <span class="chip">Bulk CSV/Excel</span>
+            <span class="chip">Fernet AES</span>
+          </div>
+        </div>
+        <div class="card t-dcs" style="min-width:140px;">
+          <div class="card-header">
+            <div class="card-icon"><svg class="ico" aria-hidden="true"><use href="#i-shield"/></svg></div>
+            <div>
+              <div class="card-title">Auth &amp; RBAC</div>
+              <div class="card-subtitle">JWT · Roles · 2FA</div>
+            </div>
+          </div>
+          <div class="card-body">Registration, login, social OAuth (Google/MS), 2FA/TOTP, OTP, KYC (Aadhaar/SurePass). Fine-grained RBAC.</div>
+          <div class="chips">
+            <span class="chip">HS256 JWT</span>
+            <span class="chip">bcrypt</span>
+            <span class="chip">SurePass KYC</span>
+          </div>
+        </div>
+        <div class="card t-dcs" style="min-width:140px;">
+          <div class="card-header">
+            <div class="card-icon"><svg class="ico" aria-hidden="true"><use href="#i-user"/></svg></div>
+            <div>
+              <div class="card-title">Holder Registry</div>
+              <div class="card-subtitle">Accounts · Wallets</div>
+            </div>
+          </div>
+          <div class="card-body">Holder account CRUD, credential wallet tracking, KYC state, blockchain wallet address binding.</div>
+          <div class="chips">
+            <span class="chip">DigiLocker IN</span>
+            <span class="chip">MetaMask</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:14px; border:1px solid rgba(37,99,235,0.25); border-radius:10px; padding:14px 16px; background:rgba(37,99,235,0.05);">
+        <div style="font-family:var(--mono); font-size:9px; letter-spacing:2px; text-transform:uppercase; color:rgba(96,165,250,0.5); margin-bottom:12px; display:flex; align-items:center; gap:8px;">
+          <span style="display:inline-block; width:24px; height:1px; background:rgba(96,165,250,0.3);"></span>
+          Workflow Data Submission — Connected Clients
+          <span style="display:inline-block; flex:1; height:1px; background:rgba(96,165,250,0.3);"></span>
+        </div>
+        <div class="row" style="gap:10px; margin-bottom:0;">
+
+          <div class="card" style="flex:1; min-width:200px; border-color:rgba(217,119,6,0.35); box-shadow:0 0 20px rgba(217,119,6,0.12); background:rgba(13,20,40,0.9);">
+            <div class="card-header">
+              <div class="card-icon" style="background:rgba(217,119,6,0.15); color:var(--contrib-l);"><svg class="ico" aria-hidden="true"><use href="#i-users"/></svg></div>
+              <div>
+                <div class="card-title" style="color:var(--contrib-l);">Contributor Portal</div>
+                <div class="card-subtitle" style="color:rgba(251,191,36,0.55);">Workflow stage data entry</div>
+              </div>
+            </div>
+            <div class="card-body">DCS Workflow Engine assigns a stage → pushes request to <strong style="color:var(--text);">Contributor Service</strong> via connector endpoint. Contributor fills required fields (text, dates, images → S3) through the portal.</div>
+            <div style="margin:10px 0 8px; display:flex; align-items:center; gap:6px; font-family:var(--mono); font-size:9.5px; color:rgba(251,191,36,0.7);">
+              <span style="padding:3px 8px; border-radius:4px; background:rgba(217,119,6,0.12); border:1px solid rgba(217,119,6,0.3);">DCS → POST /connector/new_request</span>
+            </div>
+            <div style="margin:4px 0 8px; display:flex; align-items:center; gap:6px; font-family:var(--mono); font-size:9.5px; color:rgba(251,191,36,0.7);">
+              <span style="padding:3px 8px; border-radius:4px; background:rgba(217,119,6,0.12); border:1px solid rgba(217,119,6,0.3);">Contributor → POST /v1/contributor/submission</span>
+            </div>
+            <div class="chips">
+              <span class="chip">Stage advance</span>
+              <span class="chip">S3 image upload</span>
+              <span class="chip">RequestField JSON slug</span>
+            </div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; padding:0 4px; flex-shrink:0;">
+            <div style="width:1px; flex:1; background:linear-gradient(180deg, transparent, rgba(96,165,250,0.3), transparent);"></div>
+            <div style="font-size:18px; color:rgba(96,165,250,0.4);">⇄</div>
+            <div style="font-family:var(--mono); font-size:8px; color:var(--text-c); text-align:center; letter-spacing:0.5px;">DCS<br>Workflow<br>Engine</div>
+            <div style="width:1px; flex:1; background:linear-gradient(180deg, transparent, rgba(96,165,250,0.3), transparent);"></div>
+          </div>
+
+          <div class="card" style="flex:1; min-width:200px; border-color:rgba(124,58,237,0.35); box-shadow:0 0 20px rgba(124,58,237,0.12); background:rgba(13,20,40,0.9);">
+            <div class="card-header">
+              <div class="card-icon" style="background:rgba(124,58,237,0.15); color:var(--wallet-l);"><svg class="ico" aria-hidden="true"><use href="#i-globe"/></svg></div>
+              <div>
+                <div class="card-title" style="color:var(--wallet-l);">Holder Web</div>
+                <div class="card-subtitle" style="color:rgba(167,139,250,0.55);">Issuer request &amp; submission</div>
+              </div>
+            </div>
+            <div class="card-body">Holder submits a credential issuance request via Holder Web → DCS creates a <strong style="color:var(--text);">Request Workflow Instance</strong> with approval chain. Holder also submits credential claim data through the web form at each assigned stage.</div>
+            <div style="margin:10px 0 8px; display:flex; align-items:center; gap:6px; font-family:var(--mono); font-size:9.5px; color:rgba(167,139,250,0.7);">
+              <span style="padding:3px 8px; border-radius:4px; background:rgba(124,58,237,0.12); border:1px solid rgba(124,58,237,0.3);">POST /v1/workflow → issuer request</span>
+            </div>
+            <div style="margin:4px 0 8px; display:flex; align-items:center; gap:6px; font-family:var(--mono); font-size:9.5px; color:rgba(167,139,250,0.7);">
+              <span style="padding:3px 8px; border-radius:4px; background:rgba(124,58,237,0.12); border:1px solid rgba(124,58,237,0.3);">POST /v1/data-collection → stage submit</span>
+            </div>
+            <div class="chips">
+              <span class="chip">Approval chain</span>
+              <span class="chip">RequestWorkflowInstance</span>
+              <span class="chip">Stage submission</span>
+            </div>
+          </div>
+
+        </div>
+
+        <div style="margin-top:12px; background:rgba(255,255,255,0.02); border:1px solid var(--border); border-radius:8px; padding:12px 14px;">
+          <div style="font-family:var(--mono); font-size:9px; letter-spacing:1.5px; color:var(--text-c); text-transform:uppercase; margin-bottom:10px;">End-to-End Workflow Submission Flow</div>
+          <div style="display:flex; flex-wrap:wrap; gap:6px; align-items:center;">
+            <div style="background:rgba(37,99,235,0.1); border:1px solid rgba(37,99,235,0.25); border-radius:6px; padding:6px 10px; font-size:11px; color:#93c5fd;">① DCS Workflow Engine<br><span style="font-size:10px; color:var(--text-c);">defines stages &amp; assigns</span></div>
+            <div style="color:var(--text-c); font-size:16px;">→</div>
+            <div style="background:rgba(217,119,6,0.1); border:1px solid rgba(217,119,6,0.25); border-radius:6px; padding:6px 10px; font-size:11px; color:#fbbf24;">② Contributor Portal<br><span style="font-size:10px; color:var(--text-c);">fills &amp; submits stage data</span></div>
+            <div style="color:var(--text-c); font-size:16px;">→</div>
+            <div style="background:rgba(37,99,235,0.1); border:1px solid rgba(37,99,235,0.25); border-radius:6px; padding:6px 10px; font-size:11px; color:#93c5fd;">③ DCS advances stage<br><span style="font-size:10px; color:var(--text-c);">/v1/contributor/submission</span></div>
+            <div style="color:var(--text-c); font-size:16px;">→</div>
+            <div style="background:rgba(124,58,237,0.1); border:1px solid rgba(124,58,237,0.25); border-radius:6px; padding:6px 10px; font-size:11px; color:#a78bfa;">④ Holder Web submits<br><span style="font-size:10px; color:var(--text-c);">issuer request / data-collection</span></div>
+            <div style="color:var(--text-c); font-size:16px;">→</div>
+            <div style="background:rgba(37,99,235,0.1); border:1px solid rgba(37,99,235,0.25); border-radius:6px; padding:6px 10px; font-size:11px; color:#93c5fd;">⑤ DCS issues credential<br><span style="font-size:10px; color:var(--text-c);">signs → anchors → notifies</span></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="zone zone-wallet" style="flex:1; min-width:260px;">
+      <div class="zone-header">
+        <div class="zone-bar" style="background:var(--wallet);"></div>
+        <div class="zone-header-text">
+          <h3 style="color:var(--wallet-l);">② Wallet Application</h3>
+          <p>Holder-facing credential wallet · Angular 17+</p>
+        </div>
+      </div>
+      <div class="card t-wallet" style="margin-bottom:10px;">
+        <div class="card-header">
+          <div class="card-icon"><svg class="ico" aria-hidden="true"><use href="#i-wallet"/></svg></div>
+          <div>
+            <div class="card-title">Credential Wallet</div>
+            <div class="card-subtitle">Angular · PrimeNG Aura</div>
+          </div>
+        </div>
+        <div class="card-body">View, store, and manage received credentials. Fetch by credential ID, submit credential proof.</div>
+        <div class="chips">
+          <span class="chip">Standalone components</span>
+          <span class="chip">Signals state</span>
+        </div>
+      </div>
+      <div class="card t-wallet" style="margin-bottom:10px;">
+        <div class="card-header">
+          <div class="card-icon"><svg class="ico" aria-hidden="true"><use href="#i-lock"/></svg></div>
+          <div>
+            <div class="card-title">Secure Storage</div>
+            <div class="card-subtitle">AES · Encrypted LS</div>
+          </div>
+        </div>
+        <div class="card-body">All local storage encrypted via crypto-js AES. Session timeout (30 min). AuthGuard / LoginGuard.</div>
+        <div class="chips">
+          <span class="chip">crypto-js</span>
+          <span class="chip">30min timeout</span>
+        </div>
+      </div>
+      <div class="card t-wallet">
+        <div class="card-header">
+          <div class="card-icon"><svg class="ico" aria-hidden="true"><use href="#i-id"/></svg></div>
+          <div>
+            <div class="card-title">KYC &amp; DigiLocker</div>
+            <div class="card-subtitle">India region</div>
+          </div>
+        </div>
+        <div class="card-body">Identity verification via SurePass (Aadhaar). DigiLocker document fetch for India (IN) region only.</div>
+        <div class="chips">
+          <span class="chip">Region-gated: IN</span>
+          <span class="chip">DigiLocker OAuth</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="row">
+
+    <div class="zone zone-saas" style="flex:1.1; min-width:260px;">
+      <div class="zone-header">
+        <div class="zone-bar" style="background:var(--saas);"></div>
+        <div class="zone-header-text">
+          <h3 style="color:var(--saas-l);">③ SaaS Service</h3>
+          <p>Multi-tenant API platform · White-label</p>
+        </div>
+      </div>
+      <div class="card t-saas" style="margin-bottom:10px;">
+        <div class="card-header">
+          <div class="card-icon"><svg class="ico" aria-hidden="true"><use href="#i-globe"/></svg></div>
+          <div>
+            <div class="card-title">Multi-Tenant Layer</div>
+            <div class="card-subtitle">API Keys · Rate Limit</div>
+          </div>
+        </div>
+        <div class="card-body">Exposes DCS capabilities as a managed SaaS API. Tenant isolation, API key management, rate limiting (slowapi), usage analytics.</div>
+        <div class="chips">
+          <span class="chip">slowapi</span>
+          <span class="chip">API key mgmt</span>
+          <span class="chip">Tenant isolation</span>
+        </div>
+      </div>
+      <div class="card t-saas">
+        <div class="card-header">
+          <div class="card-icon"><svg class="ico" aria-hidden="true"><use href="#i-settings"/></svg></div>
+          <div>
+            <div class="card-title">White-Label Config</div>
+            <div class="card-subtitle">Theme · Templates</div>
+          </div>
+        </div>
+        <div class="card-body">Custom branding per tenant — theme management, email templates, mail template management, user onboarding workflows.</div>
+        <div class="chips">
+          <span class="chip">Theme mgmt</span>
+          <span class="chip">Mail templates</span>
+          <span class="chip">User onboarding</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="zone zone-contrib" style="flex:1.1; min-width:260px;">
+      <div class="zone-header">
+        <div class="zone-bar" style="background:var(--contrib);"></div>
+        <div class="zone-header-text">
+          <h3 style="color:var(--contrib-l);">④ Contributor Service</h3>
+          <p>Workflow data collection · FastAPI</p>
+        </div>
+      </div>
+      <div class="card t-contrib" style="margin-bottom:10px;">
+        <div class="card-header">
+          <div class="card-icon"><svg class="ico" aria-hidden="true"><use href="#i-clipboard"/></svg></div>
+          <div>
+            <div class="card-title">Task Dashboard</div>
+            <div class="card-subtitle">Assigned by DCS</div>
+          </div>
+        </div>
+        <div class="card-body">DCS Workflow Engine pushes requests to contributor via connector endpoints. Contributor views task list, fills form fields, submits data.</div>
+        <div class="chips">
+          <span class="chip">/connector/new_request</span>
+          <span class="chip">Paginated tasks</span>
+        </div>
+      </div>
+      <div class="card t-contrib">
+        <div class="card-header">
+          <div class="card-icon"><svg class="ico" aria-hidden="true"><use href="#i-upload"/></svg></div>
+          <div>
+            <div class="card-title">Data Submission</div>
+            <div class="card-subtitle">→ DCS via HTTP</div>
+          </div>
+        </div>
+        <div class="card-body">Submits filled fields (text + images → S3). POSTs back to DCS <code style="font-size:10px; font-family:var(--mono); color:var(--contrib-l);">/v1/contributor/submission</code>. DCS advances stage.</div>
+        <div class="chips">
+          <span class="chip">S3 image upload</span>
+          <span class="chip">DCS forwarding</span>
+          <span class="chip">Stage advance</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="zone zone-verifier" style="flex:1; min-width:240px;">
+      <div class="zone-header">
+        <div class="zone-bar" style="background:var(--verifier);"></div>
+        <div class="zone-header-text">
+          <h3 style="color:var(--verifier-l);">⑤ Verifier</h3>
+          <p>Public · No auth · Cryptographic validation</p>
+        </div>
+      </div>
+      <div class="card t-verifier" style="margin-bottom:10px;">
+        <div class="card-header">
+          <div class="card-icon"><svg class="ico" aria-hidden="true"><use href="#i-search"/></svg></div>
+          <div>
+            <div class="card-title">Credential Verifier</div>
+            <div class="card-subtitle">Public REST API</div>
+          </div>
+        </div>
+        <div class="card-body">Verify by UUID or JSON upload. Returns full validation result: signature, issuer DID, expiry, revocation, blockchain anchor.</div>
+        <div class="chips">
+          <span class="chip">ed25519 sig</span>
+          <span class="chip">DID check</span>
+          <span class="chip">Blockchain verify</span>
+        </div>
+      </div>
+      <div class="card t-verifier">
+        <div class="card-header">
+          <div class="card-icon"><svg class="ico" aria-hidden="true"><use href="#i-chart"/></svg></div>
+          <div>
+            <div class="card-title">Validation Result</div>
+            <div class="card-subtitle">6-point check</div>
+          </div>
+        </div>
+        <div class="card-body">
+          ✓ signature_valid &nbsp; ✓ issuer_valid<br>
+          ✓ subject_valid &nbsp; ✓ not_revoked<br>
+          ✓ not_expired &nbsp; ✓ blockchain_verified
+        </div>
+        <div class="chips">
+          <span class="chip">ISSUED / REVOKED / EXPIRED</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="section-label"><span class="section-num">03</span> Identity Layer: DID Resolver &amp; did:evrc Method</div>
+
+  <div class="did-band">
+    <div class="did-band-header">
+      <div>
+        <h3 style="color:var(--did-l); font-size:16px; margin-bottom:4px;">⑥ Resolver &nbsp;+&nbsp; ⑦ did:evrc — EveryCRED DID Method</h3>
+        <p style="color:var(--text-b); font-size:13px;">Decentralized Identity foundation — every Issuer &amp; Holder gets a sovereign identity</p>
+      </div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <div class="did-badge">did:evrc:&lt;identifier&gt;</div>
+        <div class="did-badge">W3C DID Core 1.0</div>
+      </div>
+    </div>
+
+    <div class="row" style="margin-bottom:16px;">
+      <div class="card t-resolver" style="flex:1; min-width:240px;">
+        <div class="card-header">
+          <div class="card-icon"><svg class="ico" aria-hidden="true"><use href="#i-radar"/></svg></div>
+          <div>
+            <div class="card-title">DID Resolver Service</div>
+            <div class="card-subtitle">did:evrc: resolution endpoint</div>
+          </div>
+        </div>
+        <div class="card-body">Resolves <span style="font-family:var(--mono); font-size:11px; color:var(--resolver-l);">did:evrc:&lt;id&gt;</span> to a DID Document. Exposes Universal Resolver-compatible HTTP endpoint. Used by Verifier to validate issuer DID during credential check. Supports DID Document caching.</div>
+        <div class="chips">
+          <span class="chip">Universal Resolver compat</span>
+          <span class="chip">DID Document cache</span>
+          <span class="chip">HTTP GET resolution</span>
+        </div>
+      </div>
+
+      <div class="card t-did" style="flex:1; min-width:240px;">
+        <div class="card-header">
+          <div class="card-icon"><svg class="ico" aria-hidden="true"><use href="#i-id"/></svg></div>
+          <div>
+            <div class="card-title">did:evrc DID Method</div>
+            <div class="card-subtitle">EveryCRED Native Identity</div>
+          </div>
+        </div>
+        <div class="card-body">Proprietary DID method registered under EveryCRED. Each Issuer org gets a <span style="font-family:var(--mono); font-size:11px; color:var(--did-l);">did:evrc:</span> identifier on creation. DID Document contains public key material for credential signing &amp; verification. Blockchain-anchored for trust.</div>
+        <div class="chips">
+          <span class="chip">Auto-generated on Issuer create</span>
+          <span class="chip">Ed25519 keypair</span>
+          <span class="chip">Blockchain anchored</span>
+        </div>
+      </div>
+
+      <div class="card t-did" style="flex:1; min-width:240px;">
+        <div class="card-header">
+          <div class="card-icon"><svg class="ico" aria-hidden="true"><use href="#i-key"/></svg></div>
+          <div>
+            <div class="card-title">DID Document</div>
+            <div class="card-subtitle">W3C DID Core spec</div>
+          </div>
+        </div>
+        <div class="card-body">Contains: DID subject, verification methods (public keys), authentication, assertionMethod, service endpoints. Used to verify credential proof signatures.</div>
+        <div class="chips">
+          <span class="chip">verificationMethod</span>
+          <span class="chip">assertionMethod</span>
+          <span class="chip">serviceEndpoint</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="did-spec-grid">
+      <div class="did-spec-item">
+        <div class="label">DID Format</div>
+        <div class="value"><code>did:evrc:&lt;unique-identifier&gt;</code></div>
+      </div>
+      <div class="did-spec-item">
+        <div class="label">Signing Algorithm</div>
+        <div class="value">Ed25519 / HS256 · Credential proof embedded in VC</div>
+      </div>
+      <div class="did-spec-item">
+        <div class="label">Anchor Store</div>
+        <div class="value">Blockchain hash anchor · crypto_address / ext_pub_key (HD wallet)</div>
+      </div>
+      <div class="did-spec-item">
+        <div class="label">Resolution Flow</div>
+        <div class="value">Verifier → Resolver → DID Registry → returns DID Document JSON-LD</div>
+      </div>
+      <div class="did-spec-item">
+        <div class="label">Issuer Binding</div>
+        <div class="value">Each Issuer profile auto-assigned <code>did:evrc:</code> on POST /v1/issuer</div>
+      </div>
+      <div class="did-spec-item">
+        <div class="label">Credential Proof</div>
+        <div class="value">Issuer signs VC with DID key · proof embedded · blockchain hash stored</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label"><span class="section-num">04</span> Shared Infrastructure &amp; External Services</div>
+
+  <div class="row">
+    <div class="card card-infra">
+      <div class="card-header">
+        <div class="card-icon"><svg class="ico" aria-hidden="true"><use href="#i-cloud"/></svg></div>
+        <div>
+          <div class="card-title">AWS S3</div>
+          <div class="card-subtitle">Object storage</div>
+        </div>
+      </div>
+      <div class="card-body">Profile images, logos/banners, form field image uploads, PDF exports.</div>
+      <div class="chips"><span class="chip">boto3</span><span class="chip">S3PathMiddleware</span></div>
+    </div>
+    <div class="card card-infra">
+      <div class="card-header">
+        <div class="card-icon"><svg class="ico" aria-hidden="true"><use href="#i-database"/></svg></div>
+        <div>
+          <div class="card-title">MySQL 8+</div>
+          <div class="card-subtitle">Primary DB</div>
+        </div>
+      </div>
+      <div class="card-body">Async via aiomysql + SQLAlchemy 2.x. Alembic migrations. Soft-delete (deleted_at).</div>
+      <div class="chips"><span class="chip">AsyncSession</span><span class="chip">Alembic</span></div>
+    </div>
+    <div class="card card-infra">
+      <div class="card-header">
+        <div class="card-icon"><svg class="ico" aria-hidden="true"><use href="#i-zap"/></svg></div>
+        <div>
+          <div class="card-title">Redis + Celery</div>
+          <div class="card-subtitle">Cache · Queue</div>
+        </div>
+      </div>
+      <div class="card-body">Session store, OTP caching, rate-limit counters. Celery for async credential issuance tasks.</div>
+      <div class="chips"><span class="chip">StrictRedis</span><span class="chip">Celery workers</span></div>
+    </div>
+    <div class="card card-infra">
+      <div class="card-header">
+        <div class="card-icon"><svg class="ico" aria-hidden="true"><use href="#i-mail"/></svg></div>
+        <div>
+          <div class="card-title">SMTP + Kaleyra</div>
+          <div class="card-subtitle">Notifications</div>
+        </div>
+      </div>
+      <div class="card-body">Email: OTP, welcome, credential delivery (FastAPI-Mail + Jinja2). SMS OTP via Kaleyra REST.</div>
+      <div class="chips"><span class="chip">BackgroundTasks</span><span class="chip">Kaleyra SMS</span></div>
+    </div>
+    <div class="card card-infra">
+      <div class="card-header">
+        <div class="card-icon"><svg class="ico" aria-hidden="true"><use href="#i-link"/></svg></div>
+        <div>
+          <div class="card-title">Blockchain</div>
+          <div class="card-subtitle">Anchor · DID</div>
+        </div>
+      </div>
+      <div class="card-body">Credential hash anchoring. MetaMask / HD wallet (ext_pub_key). blockchain_hash in every VC.</div>
+      <div class="chips"><span class="chip">Hash anchor</span><span class="chip">MetaMask</span><span class="chip">HD wallet</span></div>
+    </div>
+  </div>
+
+  <div class="section-label" style="margin-top:8px;"><span class="section-num">05</span> Key End-to-End Flows</div>
+
+  <div class="imap">
+    <div class="imap-title">Component Interaction Flows</div>
+    <div class="imap-grid">
+      <div class="imap-item">
+        <div class="imap-dot" style="background:var(--dcs-l);"></div>
+        <div><strong style="color:var(--text);">Credential Issuance</strong><br>Issuer (DCS) → creates Record → triggers issuance → DCS signs with did:evrc key → anchors hash on blockchain → notifies Holder by email → Holder views in Wallet</div>
+      </div>
+      <div class="imap-item">
+        <div class="imap-dot" style="background:var(--contrib-l);"></div>
+        <div><strong style="color:var(--text);">Workflow Data Collection</strong><br>DCS Workflow → assigns stage to Contributor → POSTs request to Contributor Service → Contributor fills fields → images → S3 → submission → DCS advances to next stage</div>
+      </div>
+      <div class="imap-item">
+        <div class="imap-dot" style="background:var(--verifier-l);"></div>
+        <div><strong style="color:var(--text);">Credential Verification</strong><br>Verifier (employer) → hits Public Verifier API with UUID → Verifier calls Resolver to validate did:evrc issuer DID → checks signature, revocation, blockchain hash → returns 6-point result</div>
+      </div>
+      <div class="imap-item">
+        <div class="imap-dot" style="background:var(--wallet-l);"></div>
+        <div><strong style="color:var(--text);">Holder Wallet Flow</strong><br>Holder logs into Wallet Web App → Angular AuthGuard → fetch credentials from DCS API → KYC via SurePass (IN: DigiLocker) → share credential URL → Verifier resolves via Verifier service</div>
+      </div>
+      <div class="imap-item">
+        <div class="imap-dot" style="background:var(--did-l);"></div>
+        <div><strong style="color:var(--text);">DID Lifecycle</strong><br>Issuer created in DCS → auto-generate did:evrc identifier → store in Issuer record → DID Document published to Resolver registry → blockchain-anchored → available for resolution globally</div>
+      </div>
+      <div class="imap-item">
+        <div class="imap-dot" style="background:var(--saas-l);"></div>
+        <div><strong style="color:var(--text);">SaaS API Integration</strong><br>3rd-party client → authenticates with API key → SaaS Service enforces rate limits &amp; tenant isolation → proxies to DCS modules → returns standardized response envelope</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>EveryCRED Platform &nbsp;·&nbsp; System Architecture &nbsp;·&nbsp; v1.0.0 &nbsp;·&nbsp; May 2026</footer>
+
+
+<script>
+(function () {
+  var embed = /[?&]embed=1(?:&|$)/.test(location.search);
+  if (embed) document.documentElement.classList.add('embed');
+  function notifyHeight() {
+    if (!embed || !window.parent || window.parent === window) return;
+    var h = Math.max(document.documentElement.scrollHeight, document.body.scrollHeight);
+    try { window.parent.postMessage({ type: 'ec-arch-resize', height: h }, '*'); } catch (_) {}
+  }
+  window.addEventListener('load', notifyHeight);
+  if (typeof ResizeObserver !== 'undefined') {
+    new ResizeObserver(notifyHeight).observe(document.body);
+  }
+})();
+</script>
+
+</body>
+</html>
