@@ -148,12 +148,41 @@ main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
 }
 .breadcrumb span { color: var(--muted); }
 
+.topbar-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+
+.env-picker {
+  display: flex; align-items: center; gap: 6px;
+}
+.env-picker label {
+  font-size: .62rem; font-family: var(--font-mono);
+  color: var(--dim); letter-spacing: .06em;
+  text-transform: uppercase; white-space: nowrap;
+}
+#env-select {
+  appearance: none;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 6px;
+  color: var(--accent-light);
+  font-family: var(--font-mono);
+  font-size: .68rem;
+  padding: 4px 26px 4px 8px;
+  cursor: pointer;
+  outline: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%2364748b' d='M1 1l4 4 4-4'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+}
+#env-select:hover { border-color: var(--accent); }
+#env-select:focus { border-color: var(--accent); }
+
 .topbar-tags { display: flex; gap: 7px; }
 .tag {
   font-size: .62rem; font-family: var(--font-mono);
   color: var(--dim); padding: 2px 8px;
   border: 1px solid var(--border); border-radius: 99px;
 }
+.tag.env-tag { color: var(--accent-light); border-color: rgba(99,102,241,.35); }
 
 /* Content */
 #content-wrap {
@@ -227,18 +256,58 @@ h1.page-title {
 }
 
 .md hr { border: none; border-top: 1px solid var(--border2); margin: 28px 0; }
+
+/* Doc diagrams — consistent frame & scale for mixed source dimensions */
 .md figure.md-figure {
-  margin: 20px 0;
-  border-radius: 8px;
+  margin: 28px 0;
+  border-radius: 10px;
   border: 1px solid var(--border2);
-  background: #050a14;
-  overflow: hidden;
-  line-height: 0;
+  background: linear-gradient(180deg, #0a1220 0%, #050a14 100%);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  max-width: 100%;
 }
 .md figure.md-figure img {
   display: block;
-  width: 100%;
+  max-width: 100%;
+  width: auto;
   height: auto;
+  max-height: var(--doc-figure-max-h, 520px);
+  object-fit: contain;
+  object-position: center;
+  margin: 0 auto;
+}
+.md figure.md-figure figcaption.md-figure-caption {
+  margin: 0;
+  padding: 0 8px;
+  max-width: 42rem;
+  font-size: .72rem;
+  font-family: var(--font-mono);
+  color: var(--dim);
+  text-align: center;
+  line-height: 1.45;
+  letter-spacing: .02em;
+}
+.md figure.md-figure.md-figure--wide img {
+  max-height: var(--doc-figure-max-h-wide, 640px);
+}
+@media (max-width: 900px) {
+  .md figure.md-figure {
+    padding: 14px;
+    margin: 22px 0;
+  }
+  .md figure.md-figure img {
+    max-height: min(var(--doc-figure-max-h, 520px), 48vh);
+  }
+  .md figure.md-figure.md-figure--wide img {
+    max-height: min(var(--doc-figure-max-h-wide, 640px), 56vh);
+  }
 }
 
 
@@ -302,9 +371,16 @@ h1.page-title {
         <span>docs</span>
       </div>
     </div>
-    <div class="topbar-tags">
-      <span class="tag">API v1</span>
-      <span class="tag">May 2026</span>
+    <div class="topbar-right">
+      <div class="env-picker">
+        <label for="env-select">Environment</label>
+        <select id="env-select" title="API base URLs in examples and links use this environment"></select>
+      </div>
+      <div class="topbar-tags">
+        <span class="tag env-tag" id="env-tag" title="Active API base URL"></span>
+        <span class="tag">API v1</span>
+        <span class="tag">May 2026</span>
+      </div>
     </div>
   </div>
   <div id="content-wrap">
@@ -319,6 +395,96 @@ h1.page-title {
 
 <script>
 // ─────────────────────────────────────────────────────────────────────────────
+// ENVIRONMENT URLS — edit hosts here; docs use {{API_BASE}} / {{API_DOCS}} tokens
+// ─────────────────────────────────────────────────────────────────────────────
+const ENV_CONFIG = {
+  development: {
+    label: 'Development',
+    shortLabel: 'Dev',
+    apiBase: 'https://dev-dcs-api.everycred.com',
+    apiDocs: 'https://dev-dcs-api.everycred.com/api/docs',
+  },
+  staging: {
+    label: 'Staging',
+    shortLabel: 'Staging',
+    apiBase: 'https://staging-dcs-api.everycred.com',
+    apiDocs: 'https://staging-dcs-api.everycred.com/api/docs',
+  },
+  production: {
+    label: 'Production',
+    shortLabel: 'Prod',
+    apiBase: 'https://dcs-api.everycred.com',
+    apiDocs: 'https://dcs-api.everycred.com/api/docs',
+  },
+  local: {
+    label: 'Local',
+    shortLabel: 'Local',
+    apiBase: 'http://localhost:8000',
+    apiDocs: 'http://localhost:8000/api/docs',
+  },
+};
+
+const ENV_STORAGE_KEY = 'everycred-docs-env';
+const DEFAULT_ENV = 'development';
+
+function getEnvId() {
+  const fromUrl = new URLSearchParams(location.search).get('env');
+  if (fromUrl && ENV_CONFIG[fromUrl]) return fromUrl;
+  const stored = localStorage.getItem(ENV_STORAGE_KEY);
+  if (stored && ENV_CONFIG[stored]) return stored;
+  return DEFAULT_ENV;
+}
+
+function getEnv() {
+  return ENV_CONFIG[getEnvId()];
+}
+
+function resolveEnvTokens(text) {
+  const env = getEnv();
+  return text
+    .replace(/\{\{API_BASE\}\}/g, env.apiBase)
+    .replace(/\{\{API_DOCS\}\}/g, env.apiDocs)
+    .replace(/\{\{ENV_LABEL\}\}/g, env.label);
+}
+
+function syncEnvToUrl(envId) {
+  const url = new URL(location.href);
+  if (envId === DEFAULT_ENV) url.searchParams.delete('env');
+  else url.searchParams.set('env', envId);
+  history.replaceState(null, '', url);
+}
+
+function updateEnvChrome() {
+  const env = getEnv();
+  const tag = document.getElementById('env-tag');
+  if (tag) {
+    tag.textContent = env.shortLabel;
+    tag.title = env.apiBase;
+  }
+  const sel = document.getElementById('env-select');
+  if (sel) sel.value = getEnvId();
+}
+
+function setEnv(envId) {
+  if (!ENV_CONFIG[envId]) return;
+  localStorage.setItem(ENV_STORAGE_KEY, envId);
+  syncEnvToUrl(envId);
+  updateEnvChrome();
+  renderPage(currentPage);
+}
+
+function initEnvPicker() {
+  const sel = document.getElementById('env-select');
+  if (!sel) return;
+  sel.innerHTML = Object.entries(ENV_CONFIG)
+    .map(([id, cfg]) => `<option value="${id}">${cfg.label}</option>`)
+    .join('');
+  sel.value = getEnvId();
+  sel.onchange = () => setEnv(sel.value);
+  updateEnvChrome();
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // NAV STRUCTURE
 // ─────────────────────────────────────────────────────────────────────────────
 const NAV = [
@@ -327,7 +493,7 @@ const NAV = [
   {g:"Core Concepts",  icon:"◇", items:[["verifiable-credentials","Verifiable Credentials"],["credential-formats","Credential Formats"],["dids","Decentralized Identifiers"],["selective-disclosure","Selective Disclosure"],["blockchain-anchoring","Blockchain Anchoring"],["rbac","Roles & Permissions"]]},
   {g:"Platform",       icon:"▣", items:[["dcs-overview","DCS — Overview"],["contributor-app","Contributor Application"],["holder-web","Holder Web Application"],["wallet-app","Wallet App (Mobile)"],["verifier-platform","Verifier (WL + Own)"],["did-platform","DID Methods & Resolver"],["sdk","SDK & Developer Tools"]]},
   {g:"Workflow Engine",icon:"◉", items:[["workflow-overview","Overview"],["workflow-builder","Building a Workflow"],["workflow-flows","End-to-End Flows"],["workflow-api","API Reference"]]},
-  {g:"API Reference",  icon:"◻", items:[["api-auth","Authentication"],["api-issuer","Issuer"],["api-subject","Subject Templates"],["api-records","Records"],["api-credentials","Credentials"],["api-holder","Holder"],["api-verifier","Verifier"],["api-rbac","RBAC"]]},
+  {g:"API Reference",  icon:"◻", items:[["api-openapi","OpenAPI (live)"],["api-auth","Authentication"],["api-issuer","Issuer"],["api-subject","Subject Templates"],["api-records","Records"],["api-credentials","Credentials"],["api-holder","Holder"],["api-verifier","Verifier"],["api-rbac","RBAC"]]},
   {g:"Guides",         icon:"▷", items:[["guide-first-credential","Issue Your First Credential"],["guide-bulk","Bulk Issuance via CSV"],["guide-verify","Verify a Credential"],["guide-workflow","Set Up a Workflow"],["guide-encryption","Field-Level Encryption"]]},
   {g:"Roadmap",        icon:"◈", items:[["roadmap-overview","2026 Roadmap Overview"],["roadmap-q1","Q1 2026"],["roadmap-q2q4","Q2–Q4 2026"],["roadmap-modules","Module Status"]]},
   {g:"Reference",      icon:"◁", items:[["glossary","Glossary"],["standards","Standards & Compliance"],["changelog","Changelog"]]},
@@ -472,16 +638,7 @@ A verifiable credential ecosystem has three roles. Understanding them is the fou
 
 ## A Complete Issuance Flow
 
-\`\`\`
-1. Issuer creates an Issuer Profile  →  DID is auto-generated
-2. Issuer defines a Subject Template →  Credential schema (fields, types)
-3. Issuer creates Records            →  Raw holder data (CSV or API)
-4. Records are validated             →  Moved to DRAFT status
-5. Issuer issues credentials         →  Async: sign → anchor → PDF → email
-6. Holder receives email             →  Claims credential to Wallet
-7. Holder presents to Verifier       →  QR code or secure link
-8. Verifier checks validity          →  Signature + blockchain + revocation
-\`\`\`
+![Complete Issuance Flow|wide](assets/complete-issuance-flow.png)
 
 ---
 
@@ -679,23 +836,7 @@ Selective disclosure lets holders share only a subset of their credential claims
 
 ## How SD-JWT Works
 
-\`\`\`
-At issuance:
-  1. Issuer takes all claims: { name, dob, country, score, course }
-  2. For each claim: generates random salt → hashes (salt + claim)
-  3. Stores hashes in credential (not raw values)
-  4. Sends holder: credential + all raw (salt, claim) pairs
-
-At presentation:
-  1. Holder selects claims to reveal: { name, score }
-  2. Sends verifier: credential + only the (salt, claim) pairs for revealed fields
-
-Verification:
-  1. Recomputes hash(salt + claim) for each revealed pair
-  2. Checks against stored hashes in credential
-  3. ✅ Match = claim was signed by issuer
-  4. Hidden claims: verifier has zero access — hashes don't reveal values
-\`\`\`
+![Selective disclosure credential flow](assets/selective-disclosure-credential-flow.png)
 
 ## Privacy Guarantees
 
@@ -723,21 +864,7 @@ Every credential issued by EveryCRED is anchored on-chain, creating a tamper-evi
 
 ## The Anchoring Process
 
-\`\`\`
-Credential signed by issuer
-         │
-         ▼
-SHA-256 hash of credential data computed
-         │
-         ▼
-Hash submitted to blockchain as a transaction
-         │
-         ▼
-Transaction hash returned → stored in credential record
-         │
-         ▼
-blockchain_hash field returned in all verification responses
-\`\`\`
+![Blockchain anchoring process](assets/anchoring-process-diagram.png)
 
 ## Verification Result
 
@@ -1047,7 +1174,7 @@ Full W3C VC lifecycle SDK — create, sign, issue, verify, and revoke credential
 \`\`\`bash
 # Bearer token authentication for all API endpoints
 curl -H "Authorization: Bearer {ACCESS_TOKEN}" \\
-  https://api.yourdomain.com/v1/credentials/credentials
+  {{API_BASE}}/v1/credentials/credentials
 \`\`\`
 
 - Access token: 1 hour TTL, HS256 algorithm
@@ -1207,103 +1334,19 @@ Three complete execution flows covering both paradigms.
 
 ## Flow A — Holder-Initiated Approval
 
-\`\`\`
-Holder submits IssuerRequest
-        │
-        ▼
-Backend creates:
-  RequestWorkflowInstance  (status = PENDING)
-  RequestApprovalAssignment rows:
-    - First approver:  PENDING
-    - Remaining:       AWAITING_TURN
-        │
-        ▼
-POST /v1/workflow/requests/{issuer_request_id}/approve
-        │
-        ├── Sequential mode:
-        │     Mark assignment → APPROVED
-        │     Next AWAITING_TURN → PENDING
-        │     Inbox notification to next approver
-        │
-        └── All approvals complete?
-              YES → MoveToDraftService
-                    Creates draft records from holder submission
-                    IssuerRequest.status = draft
-              NO  → Wait for next approver
-
-OR: POST /v1/workflow/requests/{issuer_request_id}/decline
-        └── Instance → DECLINED
-            IssuerRequest → issuer_declined
-            Holder submissions rejected
-\`\`\`
+![Flow A — Holder-initiated approval|wide](assets/holder-initialted-approval.png)
 
 ---
 
 ## Flow B — Issuer-Driven Workflow Request
 
-\`\`\`
-Step 1: Create
-POST /v1/workflow-request/request
-  └─ Request (CREATED) + RequestStage rows
-
-Step 2: Send
-POST /v1/workflow-request/requests/send
-  └─ Request → IN_PROGRESS
-     Emails sent to: holder / contributor / approver / issuer
-     Holder accounts created if needed
-
-Step 3: Stage Submission (per data collection stage)
-POST /v1/workflow-request/requests/{id}/stages/{stage_id}/submit
-  └─ Validate fields vs WorkflowDataCollection config
-     Merge into requests.record_slug
-     Upload files to S3
-     RequestStage → SUBMITTED
-     Email next stage actors
-     If contributor stage → StoreRequestService (deferred)
-
-Step 4: Stage Approval
-POST /v1/workflow-request/requests/{id}/stages/{stage_id}/approve
-  └─ RequestStage → APPROVED
-     Advance to next stage or trigger draft creation
-
-Step 5: Draft Creation (automatic on last stage)
-move_workflow_request_to_draft_record()
-  └─ Record created from record_slug
-     Request.status → DRAFT_STORED
-\`\`\`
+![Flow B — Issuer-driven workflow request|wide](assets/Issuer-driven-workflow-request.png)
 
 ---
 
 ## Flow C — Contributor Submission (Async)
 
-\`\`\`
-Contributor receives email with submission token
-        │
-        ▼
-POST /v1/contributor/submission  (no standard JWT)
-  { uuid, field_values, workflow_request_id, workflow_stage_id }
-        │
-        ▼
-GetContributorSubmissionService:
-  1. Resolve ContributorSubmission + RequestStage
-  2. Validate + process fields
-  3. Upload files to S3
-  4. Merge into stage record_slug
-  5. UPDATE ContributorSubmission
-  6. Evaluate completion:
-       External push needed?
-         → BackgroundTasks.add_task(run_deferred_contributor_store_request)
-           (runs AFTER HTTP response — prevents deadlocks)
-       All stages complete?
-         → move_workflow_request_to_draft_record()
-  7. contributor_submission_task.apply_async(queue="credential_queue")
-       → Celery sends inbox notification to issuer
-        │
-        ▼
-HTTP 200 returned immediately
-BackgroundTask executes post-response (deferred push)
-Celery task executes asynchronously (notification)
-\`\`\`
+![Flow C — Contributor submission (async)|wide](assets/contributor-submission.png)
 
 > **Why deferred?** The HTTP transaction must commit before the Celery task or external connector tries to read the same rows — preventing database deadlocks.
 
@@ -1311,23 +1354,7 @@ Celery task executes asynchronously (notification)
 
 ## Status Transitions Reference
 
-\`\`\`
-WorkflowStatus:
-  ACTIVE → INACTIVE → DELETED
-
-RequestStatus (issuer-driven):
-  CREATED → IN_PROGRESS → COMPLETED → DRAFT_STORED
-                │
-                └→ DECLINED
-
-RequestStageStatus:
-  PENDING → IN_PROGRESS → SUBMITTED → APPROVED
-                                └→ DECLINED
-
-RequestApprovalAssignment:
-  AWAITING_TURN → PENDING → APPROVED
-                     └→ DECLINED
-\`\`\`
+![Status transitions reference|wide](assets/status-transition-reference.png)
 `};
 
 PAGES["workflow-api"] = {title:"Workflow API Reference", badge:"Workflow", body:`
@@ -1385,6 +1412,16 @@ Complete endpoint reference for both workflow routers.
 | POST | \`/requests/{id}/stages/{stage_id}/decline\` | request_list_read | Decline stage |
 | POST | \`/requests/move-to-draft\` | request_list_read | Manually move to draft |
 | DELETE | \`/requests\` | request_delete | Delete requests |
+`};
+
+PAGES["api-openapi"] = {title:"OpenAPI documentation (live)", badge:"API", body:`
+The interactive OpenAPI reference is hosted separately for each deployment.
+
+**[Open API documentation →]({{API_DOCS}})**
+
+Canonical URL: \`{{API_DOCS}}\`
+
+> Examples and links use the **{{ENV_LABEL}}** API host (\`{{API_BASE}}\`). Switch environment from the selector in the top bar.
 `};
 
 PAGES["api-auth"] = {title:"Authentication API", badge:"API", body:`
@@ -1844,7 +1881,7 @@ A complete walkthrough from account creation to a verified credential.
 ## Step 1 — Create an Issuer Profile
 
 \`\`\`bash
-curl -X POST "https://api.yourdomain.com/v1/issuer
+curl -X POST "{{API_BASE}}/v1/issuer
   ?mode=PRODUCTION
   &credential_type=VERIFIABLE_CREDENTIAL
   &wallet_holder_type=INDIVIDUAL" \\
@@ -1864,7 +1901,7 @@ Save the returned \`id\` as **ISSUER_ID**. The \`did\` is auto-generated and imm
 ## Step 2 — Define a Subject Template
 
 \`\`\`bash
-curl -X POST "https://api.yourdomain.com/v1/subject?issuer_id=$ISSUER_ID" \\
+curl -X POST "{{API_BASE}}/v1/subject?issuer_id=$ISSUER_ID" \\
   -H "Authorization: Bearer {TOKEN}" \\
   -d '{
     "subject_name": "Training Certificate",
@@ -1884,7 +1921,7 @@ Save the returned \`id\` as **SUBJECT_ID**.
 ## Step 3 — Create a Record
 
 \`\`\`bash
-curl -X POST "https://api.yourdomain.com/v1/records
+curl -X POST "{{API_BASE}}/v1/records
   ?subject_id=$SUBJECT_ID&issuer_id=$ISSUER_ID" \\
   -H "Authorization: Bearer {TOKEN}" \\
   -d '{
@@ -1904,7 +1941,7 @@ Record starts in \`IN_PROCESS\` status. Save the returned \`id\` as **RECORD_ID*
 ## Step 4 — Validate the Record
 
 \`\`\`bash
-curl -X POST "https://api.yourdomain.com/v1/records/validate_records
+curl -X POST "{{API_BASE}}/v1/records/validate_records
   ?subject_id=$SUBJECT_ID&issuer_id=$ISSUER_ID" \\
   -H "Authorization: Bearer {TOKEN}" \\
   -d '{"record_ids": [$RECORD_ID]}'
@@ -1917,7 +1954,7 @@ Passing records move to \`DRAFT\` status.
 ## Step 5 — Issue the Credential
 
 \`\`\`bash
-curl -X POST "https://api.yourdomain.com/v1/credentials/user/credentials/issue
+curl -X POST "{{API_BASE}}/v1/credentials/user/credentials/issue
   ?email_to_holder=true
   &valid_from=2026-05-13T00:00:00Z
   &valid_until=2027-05-12T23:59:59Z" \\
@@ -1932,7 +1969,7 @@ Returns \`202 Accepted\`. Alice receives an email once the async task completes.
 ## Step 6 — Verify (Public — no token needed)
 
 \`\`\`bash
-curl "https://api.yourdomain.com/v1/verifier/user/credential/validate/{credential_uuid}"
+curl "{{API_BASE}}/v1/verifier/user/credential/validate/{credential_uuid}"
 \`\`\`
 `};
 
@@ -1961,7 +1998,7 @@ Jane Doe,jane@example.com,Machine Learning,2026-05-12,88
 ## Step 3 — Upload
 
 \`\`\`bash
-curl -X POST "https://api.yourdomain.com/v1/records/bulk_insert
+curl -X POST "{{API_BASE}}/v1/records/bulk_insert
   ?subject_id=1&issuer_id=1" \\
   -H "Authorization: Bearer {TOKEN}" \\
   -F "file=@students.csv"
@@ -2012,7 +2049,7 @@ Credential verification is fully public — no API key or login required. Any em
 Every credential has a unique UUID. Share it with verifiers or embed it in a QR code.
 
 \`\`\`bash
-curl "https://api.yourdomain.com/v1/verifier/user/credential/validate/{uuid}"
+curl "{{API_BASE}}/v1/verifier/user/credential/validate/{uuid}"
 \`\`\`
 
 All six verification checks are performed and returned in the response.
@@ -2020,7 +2057,7 @@ All six verification checks are performed and returned in the response.
 ## Option 2 — Full Credential View
 
 \`\`\`bash
-curl "https://api.yourdomain.com/v1/verifier/user/credential/{uuid}"
+curl "{{API_BASE}}/v1/verifier/user/credential/{uuid}"
 \`\`\`
 
 Returns the complete credential including issuer info, holder info, and all claims.
@@ -2028,7 +2065,7 @@ Returns the complete credential including issuer info, holder info, and all clai
 ## Option 3 — Batch via JSON Upload
 
 \`\`\`bash
-curl -X POST "https://api.yourdomain.com/v1/verifier/user/credential/upload/json" \\
+curl -X POST "{{API_BASE}}/v1/verifier/user/credential/upload/json" \\
   -H "Content-Type: application/json" \\
   -d @credentials.json
 \`\`\`
@@ -2496,7 +2533,7 @@ EveryCRED is composed of five distinct product components that form a complete d
 
 ## The Five Components
 
-![EveryCRED platform architecture — the five components](assets/system-architecture.png)
+![EveryCRED platform architecture — the five components|wide](assets/system-architecture.png)
 
 ---
 
@@ -2775,25 +2812,7 @@ Contributors are third parties — exam boards, HR systems, verification agencie
 
 ## Submission Flow
 
-\`\`\`
-Issuer creates workflow with "contributor" stage
-              │
-              ▼
-Workflow request sent  →  Contributor receives tokenised email link
-              │
-              ▼
-Contributor opens secure submission form
-(No EveryCRED account required — token-based auth)
-              │
-              ▼
-POST /v1/contributor/submission  (no standard JWT)
-              │
-              ▼
-Data merged into requests.record_slug
-              │
-              ▼
-Stage advances  →  next approval stage or automatic draft creation
-\`\`\`
+![Contributor submission flow](assets/contributor-submission-flow.png)
 
 ## Contributor Account Management
 
@@ -2993,22 +3012,7 @@ EveryCRED operates a dedicated DID layer that manages identity creation, documen
 
 ## Trustless Verification Flow
 
-\`\`\`
-Verifier receives credential
-        │
-        ▼
-Read issuer field: "did:evrc:123456789abcdefg"
-        │
-        ▼
-Resolve DID → GET issuer's public key
-(from EveryCRED DID registry or issuer's own domain for did:web)
-        │
-        ▼
-Verify Ed25519 signature against public key
-        │
-        ▼
-✅ Verification succeeds — EveryCRED servers not required to be online
-\`\`\`
+![Trustless verification flow](assets/trustless-verification-flow.png)
 
 ## Completion: 67% (2/3 features)
 
@@ -3042,6 +3046,7 @@ function renderMarkdown(text) {
     return t
       .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
       .replace(/`([^`]+)`/g, '<code>$1</code>')
+      .replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
       .replace(/\[([^\]]+)\]\(#([^)]+)\)/g, '<a href="#" onclick="navigate(\'$2\');return false;">$1</a>');
   }
 
@@ -3049,13 +3054,20 @@ function renderMarkdown(text) {
     const line = lines[i];
 
 
-    // Markdown image: ![alt](url)
+    // Markdown image: ![alt](url)  or  ![alt|wide](url) for taller/wide diagrams
     const imgLine = line.match(/^!\[([^\]]*)\]\(([^)]+)\)\s*$/);
     if (imgLine) {
       function escapeAttr(s) { return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
-      const alt = escapeAttr(imgLine[1]);
+      const altRaw = imgLine[1];
+      const wide = /\|wide$/i.test(altRaw);
+      const altText = altRaw.replace(/\|wide$/i, '').trim();
+      const alt = escapeAttr(altText);
       const src = escapeAttr(imgLine[2]);
-      html += `<figure class="md-figure"><img src="${src}" alt="${alt}" loading="lazy" decoding="async"></figure>`;
+      const figClass = 'md-figure' + (wide ? ' md-figure--wide' : '');
+      const caption = altText
+        ? `<figcaption class="md-figure-caption">${alt}</figcaption>`
+        : '';
+      html += `<figure class="${figClass}"><img src="${src}" alt="${alt}" loading="lazy" decoding="async">${caption}</figure>`;
       i++;
       continue;
     }
@@ -3167,6 +3179,8 @@ function renderPage(id) {
   const page = PAGES[id];
   if (!page) return;
 
+  const bodyEl = document.getElementById('page-body');
+
   // Breadcrumb
   const group = NAV.find(g => g.items.some(([pid]) => pid === id));
   const bc = document.getElementById('breadcrumb');
@@ -3188,7 +3202,8 @@ function renderPage(id) {
   document.title = `${page.title} — EveryCRED Docs`;
 
   // Body
-  document.getElementById('page-body').innerHTML = renderMarkdown(page.body);
+  bodyEl.className = 'md';
+  bodyEl.innerHTML = renderMarkdown(resolveEnvTokens(page.body));
 
   // Footer
   document.getElementById('footer-txt').textContent = `EveryCRED Documentation · 2026`;
@@ -3206,6 +3221,7 @@ function toggleSidebar() {
 // INIT
 // ─────────────────────────────────────────────────────────────────────────────
 
+initEnvPicker();
 buildNav('');
 renderPage('intro');
 </script>
