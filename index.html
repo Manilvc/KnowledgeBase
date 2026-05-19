@@ -543,10 +543,99 @@ h1.page-title {
 
 /* Badge colour utility applied via JS */
 
+/* Download export menu */
+.download-wrap { position: relative; }
+.download-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  font-size: 0.68rem;
+  font-family: var(--font-mono);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--accent-light);
+  background: rgba(99, 102, 241, 0.1);
+  border: 1px solid rgba(99, 102, 241, 0.35);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s;
+}
+.download-btn:hover {
+  background: rgba(99, 102, 241, 0.18);
+  border-color: var(--accent);
+}
+.download-btn svg {
+  width: 14px;
+  height: 14px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+}
+.download-btn.is-busy {
+  opacity: 0.65;
+  pointer-events: none;
+}
+.download-menu {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  min-width: 280px;
+  max-height: min(70vh, 520px);
+  overflow-y: auto;
+  padding: 6px;
+  background: #0c1424;
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.55);
+  z-index: 50;
+}
+.download-menu.open { display: block; }
+.download-menu-label {
+  padding: 8px 10px 4px;
+  font-size: 0.58rem;
+  font-family: var(--font-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+.download-menu button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 8px 10px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #c8d6e5;
+  font-size: 0.78rem;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: background 0.1s, color 0.1s;
+}
+.download-menu button:hover {
+  background: rgba(99, 102, 241, 0.12);
+  color: #e8eef6;
+}
+.download-menu button span {
+  display: block;
+  font-size: 0.65rem;
+  color: var(--dim);
+  margin-top: 2px;
+  font-family: var(--font-mono);
+}
+.download-menu hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 6px 4px;
+}
+
 @media (max-width: 900px) {
   #content-wrap { padding: 28px 20px 64px; }
   .ec-arch-toolbar { flex-direction: column; align-items: flex-start; }
   .ec-arch-legend { width: 100%; }
+  .download-menu { right: -8px; min-width: 220px; }
 }
 </style>
 </head>
@@ -579,6 +668,28 @@ h1.page-title {
       <div class="env-picker">
         <label for="env-select">Environment</label>
         <select id="env-select" title="API base URLs in examples and links use this environment"></select>
+      </div>
+      <div class="download-wrap" id="download-wrap">
+        <button type="button" class="download-btn" id="download-btn" aria-expanded="false" aria-controls="download-menu" title="Download documentation">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+          Download
+        </button>
+        <div class="download-menu" id="download-menu" role="menu">
+          <div class="download-menu-label">This page</div>
+          <button type="button" role="menuitem" data-export="page-md">Markdown<span>.md — source text</span></button>
+          <button type="button" role="menuitem" data-export="page-json">JSON<span>.json — structured page</span></button>
+          <button type="button" role="menuitem" data-export="page-doc">Word<span>.doc — opens in Microsoft Word</span></button>
+          <hr>
+          <div class="download-menu-label">Full knowledge base (ZIP)</div>
+          <button type="button" role="menuitem" data-export="full-zip">Complete bundle<span>MD + JSON + DOC per page + assets</span></button>
+          <button type="button" role="menuitem" data-export="full-zip-md">ZIP — Markdown only<span>01 - Overview/Introduction.md + assets</span></button>
+          <button type="button" role="menuitem" data-export="full-zip-json">ZIP — JSON only<span>section folders · page title.json</span></button>
+          <hr>
+          <div class="download-menu-label">Full knowledge base (single file)</div>
+          <button type="button" role="menuitem" data-export="full-md">Markdown<span>everycred-knowledge-base.md</span></button>
+          <button type="button" role="menuitem" data-export="full-json">JSON<span>everycred-knowledge-base.json</span></button>
+          <button type="button" role="menuitem" data-export="full-doc">Word<span>everycred-knowledge-base.doc</span></button>
+        </div>
       </div>
       <div class="topbar-tags">
         <span class="tag env-tag" id="env-tag" title="Active API base URL"></span>
@@ -3501,5 +3612,8 @@ initEnvPicker();
 buildNav('');
 renderPage('intro');
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="assets/docs-export.js"></script>
+<script>initDownloadMenu();</script>
 </body>
 </html>
